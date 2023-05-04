@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thread02-ThreadPool", "Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thread03-Task", "Examples\Thread03-Task\Thread03-Task.csproj", "{32549BFC-02AA-4018-8248-19B2A12F4253}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilerOptimization01", "Examples\CompilerOptimization01\CompilerOptimization01.csproj", "{037AF8F0-96AD-490F-8571-97A744B7B162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{32549BFC-02AA-4018-8248-19B2A12F4253}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32549BFC-02AA-4018-8248-19B2A12F4253}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32549BFC-02AA-4018-8248-19B2A12F4253}.Release|Any CPU.Build.0 = Release|Any CPU
+		{037AF8F0-96AD-490F-8571-97A744B7B162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{037AF8F0-96AD-490F-8571-97A744B7B162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{037AF8F0-96AD-490F-8571-97A744B7B162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{037AF8F0-96AD-490F-8571-97A744B7B162}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{3A143BAB-BF2D-4CA2-B0E7-178AD1CBE544} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{6B73EB8B-2EC9-4DED-A388-825F65AE30C2} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{32549BFC-02AA-4018-8248-19B2A12F4253} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
+		{037AF8F0-96AD-490F-8571-97A744B7B162} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5807A92-8B93-42CC-A5E4-9061000874E5}
