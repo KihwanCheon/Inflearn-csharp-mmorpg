@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29411.108
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{2F83EF3D-B6C1-4816-ADA2-840518C1D55E}"
 EndProject
@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyClient", "DummyClient\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{4570EE5B-2D76-4E4E-8165-43DBCD30C77A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thread01", "Examples\Thread01\Thread01.csproj", "{3A143BAB-BF2D-4CA2-B0E7-178AD1CBE544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thread01", "Examples\Thread01\Thread01.csproj", "{3A143BAB-BF2D-4CA2-B0E7-178AD1CBE544}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thread02-ThreadPool", "Examples\Thread02-ThreadPool\Thread02-ThreadPool.csproj", "{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thread02-ThreadPool", "Examples\Thread02-ThreadPool\Thread02-ThreadPool.csproj", "{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thread03-Task", "Examples\Thread03-Task\Thread03-Task.csproj", "{32549BFC-02AA-4018-8248-19B2A12F4253}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32549BFC-02AA-4018-8248-19B2A12F4253}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32549BFC-02AA-4018-8248-19B2A12F4253}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32549BFC-02AA-4018-8248-19B2A12F4253}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32549BFC-02AA-4018-8248-19B2A12F4253}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3A143BAB-BF2D-4CA2-B0E7-178AD1CBE544} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{6B73EB8B-2EC9-4DED-A388-825F65AE30C2} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
+		{32549BFC-02AA-4018-8248-19B2A12F4253} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5807A92-8B93-42CC-A5E4-9061000874E5}
