@@ -22,7 +22,9 @@ namespace CompilerOptimization01
         {
             Console.WriteLine("스레드 시작!");
 
-            while (!_stop)          // Release 모드로 컴파일하면 최적화 됨.
+            // Release 모드로 컴파일하면 최적화 됨. 메모리에서 한번만 가져와서 그 값만 비교 반복함.
+            // Debug 모드로 가져오면, 메모리에서 매번 가져와서 비교함.
+            while (!_stop)
             {
                 // wait stop == false
             }
