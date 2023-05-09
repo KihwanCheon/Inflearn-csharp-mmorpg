@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyClient", "DummyClient\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{4570EE5B-2D76-4E4E-8165-43DBCD30C77A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thread01", "Examples\Thread01\Thread01.csproj", "{3A143BAB-BF2D-4CA2-B0E7-178AD1CBE544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT01-Thread01", "Examples\MT01-Thread01\MT01-Thread01.csproj", "{3A143BAB-BF2D-4CA2-B0E7-178AD1CBE544}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Thread02-ThreadPool", "Examples\Thread02-ThreadPool\Thread02-ThreadPool.csproj", "{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT02-Thread02-ThreadPool", "Examples\MT02-Thread02-ThreadPool\MT02-Thread02-ThreadPool.csproj", "{6B73EB8B-2EC9-4DED-A388-825F65AE30C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thread03-Task", "Examples\Thread03-Task\Thread03-Task.csproj", "{32549BFC-02AA-4018-8248-19B2A12F4253}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT03-Thread03-Task", "Examples\MT03-Thread03-Task\MT03-Thread03-Task.csproj", "{32549BFC-02AA-4018-8248-19B2A12F4253}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilerOptimization01", "Examples\CompilerOptimization01\CompilerOptimization01.csproj", "{037AF8F0-96AD-490F-8571-97A744B7B162}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT04-CompilerOptimization01", "Examples\MT04-CompilerOptimization01\MT04-CompilerOptimization01.csproj", "{037AF8F0-96AD-490F-8571-97A744B7B162}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
