@@ -6,7 +6,7 @@ namespace MT06_Memory_Barrier
     /**
      * r1, r2에 메모리에서 로드해서 대입하는 부분이 코드 재배치가 이루어져 r1 == 0 && r2 == 0 상태가 만들어진다
      */
-    class HardwareOptimizedExecutor
+    class ExecutorHardwareOptimized
     {
         static int x = 0;
         static int y = 0;
@@ -53,7 +53,7 @@ namespace MT06_Memory_Barrier
                     break;
             }
 
-            Console.WriteLine($"HardwareOptimizedExecutor {count}번 만에 빠져나옴");
+            Console.WriteLine($"ExecutorHardwareOptimized {count}번 만에 빠져나옴");
         }
     }
 }

@@ -5,9 +5,10 @@
         
         static void Main(string[] args)
         {
-            HardwareOptimizedExecutor.Execute(); // loop will be broken.
-
-            MemoryBarrieredExecutor.Execute();  // infinite looped.
+            ExecutorHardwareOptimized.Execute(); // loop will be broken.
+            ExecutorAlbahariNoneBarriered.Execute(); 
+            ExecutorAlbahariMemoryBarrieredFull.Execute(); 
+            ExecutorMemoryBarriered.Execute();  // infinite looped.
         }
     }
 }
