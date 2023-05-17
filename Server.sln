@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT06-Memory-Barrier", "Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT07-Interlocked", "Examples\MT07-Interlocked\MT07-Interlocked.csproj", "{523EC5E4-D4EA-4260-BACA-CCA3E7EFC6FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT08-Lock-101", "Examples\MT08-Lock-101\MT08-Lock-101.csproj", "{925AA26C-77C9-451F-BEF3-A32C1D2E0A3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{523EC5E4-D4EA-4260-BACA-CCA3E7EFC6FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{523EC5E4-D4EA-4260-BACA-CCA3E7EFC6FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{523EC5E4-D4EA-4260-BACA-CCA3E7EFC6FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{925AA26C-77C9-451F-BEF3-A32C1D2E0A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{925AA26C-77C9-451F-BEF3-A32C1D2E0A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{925AA26C-77C9-451F-BEF3-A32C1D2E0A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{925AA26C-77C9-451F-BEF3-A32C1D2E0A3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{1FCF5D38-3525-4AB7-BC3F-1EBED9FCD51C} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{A1F08799-30D2-471F-B45B-A2F724F77480} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{523EC5E4-D4EA-4260-BACA-CCA3E7EFC6FC} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
+		{925AA26C-77C9-451F-BEF3-A32C1D2E0A3D} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5807A92-8B93-42CC-A5E4-9061000874E5}
