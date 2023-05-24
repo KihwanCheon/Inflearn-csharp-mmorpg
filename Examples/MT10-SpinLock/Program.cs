@@ -13,12 +13,11 @@ namespace MT10_SpinLock
             {
             }
 
-            _locked = true;
+            _locked = true; // not atomic on check and update 
         }
 
         public void Release()
         {
-
             _locked = false;
         }
     }
