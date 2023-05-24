@@ -1,24 +1,26 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MT10_SpinLock
 {
     class SpinLock
     {
-        private volatile bool _locked = false;
+        private volatile int _locked = 0;
 
         public void Acquire()
         {
-            while (_locked)
+            while (true)
             {
+                int origin = Interlocked.Exchange(ref _locked, 1); // use atomic.
+                if (origin == 0)
+                    break;
             }
-
-            _locked = true; // not atomic on check and update 
         }
 
         public void Release()
         {
-            _locked = false;
+            _locked = 0;
         }
     }
 
