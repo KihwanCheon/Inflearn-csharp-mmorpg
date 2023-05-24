@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT10-SpinLock", "Examples\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT11-ContextSwitching", "Examples\MT11-ContextSwitching\MT11-ContextSwitching.csproj", "{9BB0F45E-E2F2-4ACC-84FD-D076B011C533}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT12-AutoResetEvent", "Examples\MT12-AutoResetEvent\MT12-AutoResetEvent.csproj", "{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{9BB0F45E-E2F2-4ACC-84FD-D076B011C533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BB0F45E-E2F2-4ACC-84FD-D076B011C533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BB0F45E-E2F2-4ACC-84FD-D076B011C533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +117,7 @@ Global
 		{B3A9502B-E96A-49EF-9285-A9E98B2D50B6} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{59CB1A7E-6E09-40FB-B1B7-2B5B97E9BF23} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{9BB0F45E-E2F2-4ACC-84FD-D076B011C533} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
+		{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5807A92-8B93-42CC-A5E4-9061000874E5}
