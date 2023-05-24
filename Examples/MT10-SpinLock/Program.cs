@@ -7,14 +7,24 @@ namespace MT10_SpinLock
     class SpinLock
     {
         private volatile int _locked = 0;
+        private readonly bool UseExchange = false;
 
         public void Acquire()
         {
             while (true)
             {
-                int origin = Interlocked.Exchange(ref _locked, 1); // use atomic.
-                if (origin == 0)
-                    break;
+                if (UseExchange)
+                {
+                    int origin = Interlocked.Exchange(ref _locked, 1); // use atomic.
+                    if (origin == 0)
+                        break;
+                }
+                else // CAS
+                {
+                    const int expected = 0, desired = 1;
+                    if (Interlocked.CompareExchange(ref _locked, desired, expected) == expected)
+                        break;
+                }
             }
         }
 
@@ -30,7 +40,7 @@ namespace MT10_SpinLock
         private static int _num = 0;
         private static SpinLock _lock = new SpinLock();
 
-        private const int LoopCnt = 10000;
+        private const int LoopCnt = 1000000;
 
 
         static void Thread_01()
