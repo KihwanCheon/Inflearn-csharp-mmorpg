@@ -6,8 +6,11 @@ namespace MT12_AutoResetEvent
 {
     class Lock
     {
+        // ResetEvent 들은 커널모드라서 느림.
         AutoResetEvent _available = new AutoResetEvent(true);
-        
+        // ManualResetEvent _available = new ManualResetEvent(true);    // _available.Reset() 이 필요함. WaitOne, Reset 이 한번에 원자적으로 동작하지 않음.
+        // ManualResetEvent _available = new ManualResetEvent(false);   // 대기중인 스레드를 동시 실행시키는 등의 용도로 활용 // https://learn.microsoft.com/ko-kr/dotnet/api/system.threading.manualresetevent?view=net-7.0
+
         public void Acquire()
         {
             _available.WaitOne();   // 입장시도.
