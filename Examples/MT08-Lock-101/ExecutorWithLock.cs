@@ -13,7 +13,7 @@ namespace MT08_Lock_101
         {
             for (int i = 0; i < LoopCnt; ++i)
             {
-                lock (_obj) // 잠금.
+                lock (_obj) // 잠금. // This uses Monitor internally.
                 {
                     _number++;
                 }
