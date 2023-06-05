@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT11-ContextSwitching", "Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT12-AutoResetEvent", "Examples\MT12-AutoResetEvent\MT12-AutoResetEvent.csproj", "{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT13-ReadWriteLock", "Examples\MT13-ReadWriteLock\MT13-ReadWriteLock.csproj", "{B1834E63-EEF8-48FA-8350-99E4C764184F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MT13-ReadWriteLock", "Examples\MT13-ReadWriteLock\MT13-ReadWriteLock.csproj", "{B1834E63-EEF8-48FA-8350-99E4C764184F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MT14-ReadWriteLockImpl", "Examples\MT14-ReadWriteLockImpl\MT14-ReadWriteLockImpl.csproj", "{C303B6AA-11C9-4267-B82B-81168113A9B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +109,10 @@ Global
 		{B1834E63-EEF8-48FA-8350-99E4C764184F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1834E63-EEF8-48FA-8350-99E4C764184F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1834E63-EEF8-48FA-8350-99E4C764184F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C303B6AA-11C9-4267-B82B-81168113A9B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C303B6AA-11C9-4267-B82B-81168113A9B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C303B6AA-11C9-4267-B82B-81168113A9B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C303B6AA-11C9-4267-B82B-81168113A9B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{9BB0F45E-E2F2-4ACC-84FD-D076B011C533} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{4F4BEBDD-6F44-40AC-83F3-0ACE8F4FABAC} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 		{B1834E63-EEF8-48FA-8350-99E4C764184F} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
+		{C303B6AA-11C9-4267-B82B-81168113A9B7} = {4570EE5B-2D76-4E4E-8165-43DBCD30C77A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5807A92-8B93-42CC-A5E4-9061000874E5}
