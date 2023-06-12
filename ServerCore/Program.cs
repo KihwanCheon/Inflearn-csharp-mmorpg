@@ -7,6 +7,8 @@ namespace ServerCore
 {
     class Program
     {
+        private static Listener _listener = new Listener();
+
         static void Main(string[] args)
         {
             string host = Dns.GetHostName();
@@ -14,24 +16,16 @@ namespace ServerCore
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777);
 
-            // 문지기.
-            Socket listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
             try
             {
-                // 문지기 교육.
-                listenSocket.Bind(endPoint);
-
-                // 영업시작.
-                // backlog: 최대 대기수.
-                listenSocket.Listen(10);
+                _listener.Init(endPoint);
 
                 while (true)
                 {
                     Console.WriteLine("Listening ....");
 
                     // 손님입장.
-                    Socket client = listenSocket.Accept(); // blocking
+                    Socket client = _listener.Accept(); // blocking
 
                     // 받는다.
                     byte[] recvBuff = new byte[1024];
