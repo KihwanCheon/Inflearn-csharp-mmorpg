@@ -9,6 +9,23 @@ namespace ServerCore
     {
         private static Listener _listener = new Listener();
 
+        static void OnAcceptHandler(Socket clientSocket)
+        {
+            // 받는다.
+            byte[] recvBuff = new byte[1024];
+            int recvBytes = clientSocket.Receive(recvBuff);
+            string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
+            Console.WriteLine($"[From Client] {recvData}");
+
+            // 보낸다.
+            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
+            clientSocket.Send(sendBuff);          // blocking.
+
+            // 내보낸다.
+            clientSocket.Shutdown(SocketShutdown.Both);
+            clientSocket.Close();
+        }
+
         static void Main(string[] args)
         {
             string host = Dns.GetHostName();
@@ -18,28 +35,12 @@ namespace ServerCore
 
             try
             {
-                _listener.Init(endPoint);
+                _listener.Init(endPoint, OnAcceptHandler);
+                Console.WriteLine("Listening ....");
 
                 while (true)
                 {
-                    Console.WriteLine("Listening ....");
-
-                    // 손님입장.
-                    Socket client = _listener.Accept(); // blocking
-
-                    // 받는다.
-                    byte[] recvBuff = new byte[1024];
-                    int recvBytes = client.Receive(recvBuff);
-                    string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
-                    Console.WriteLine($"[From Client] {recvData}");
-
-                    // 보낸다.
-                    byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-                    client.Send(sendBuff);          // blocking.
-
-                    // 내보낸다.
-                    client.Shutdown(SocketShutdown.Both);
-                    client.Close();
+                    ; //
                 }
 
             }
