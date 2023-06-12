@@ -6,18 +6,17 @@ namespace MT15_ThreadLocalStorage
 {
     internal class Program
     {
-        // private static string ThreadName;
-        private static ThreadLocal<string> ThreadName = new ThreadLocal<string>();
+        
+        private static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => {
+            return $"My Name is {Thread.CurrentThread.ManagedThreadId}";
+        });
         
         static void WhoAmI()
         {
-            // ThreadName = $"My Name is {Thread.CurrentThread.ManagedThreadId}";
-            ThreadName.Value = $"My Name is {Thread.CurrentThread.ManagedThreadId}";
-
-
-            Thread.Sleep(1000);
-            // Console.WriteLine(ThreadName);
-            Console.WriteLine(ThreadName.Value);
+            if (ThreadName.IsValueCreated)
+                Console.WriteLine($"{ThreadName.Value} repeated");
+            else
+                Console.WriteLine(ThreadName.Value);
         }
 
 
@@ -26,6 +25,8 @@ namespace MT15_ThreadLocalStorage
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(3, 3);
             Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
+
+            ThreadName.Dispose();
         }
     }
 }
