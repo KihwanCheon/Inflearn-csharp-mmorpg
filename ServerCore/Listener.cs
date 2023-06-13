@@ -20,10 +20,23 @@ namespace ServerCore
             // backlog: 최대 대기수.
             _listenSocket.Listen(10);
 
-
             SocketAsyncEventArgs args = new SocketAsyncEventArgs();
             args.Completed += OnAcceptCompleted;
-            RegisterAccept(args);
+            RegisterAccept(args); // RegisterAcceptMany(10);
+        }
+
+        /// <summary>
+        /// 부하 분산을 위해 SocketAsyncEventArgs 여럿 생성 등록해서 사용가능하다.
+        /// </summary>
+        /// <param name="cnt"></param>
+        void RegisterAcceptMany(int cnt)
+        {
+            for (int i = 0; i < cnt; i++)
+            {
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += OnAcceptCompleted;
+                RegisterAccept(args);
+            }
         }
 
         void RegisterAccept(SocketAsyncEventArgs args)
