@@ -19,15 +19,17 @@ namespace DummyClient
 
             try
             {
-
                 // 문지기에게 입장문의.
                 socket.Connect(endPoint);
                 Console.WriteLine($"Connected to {socket.RemoteEndPoint}");
 
                 // 보낸다.
-                byte[] sendBuff = Encoding.UTF8.GetBytes("Hello World!");
-                socket.Send(sendBuff);
-
+                for (int i = 0; i < 5; i++)
+                {
+                    byte[] sendBuff = Encoding.UTF8.GetBytes($"Hello World! {i}");
+                    socket.Send(sendBuff);
+                }
+                
                 // 받는다.
                 byte[] recvBuff = new byte[1024];
                 int recvBytes = socket.Receive(recvBuff);

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace ServerCore
 {
@@ -11,19 +12,25 @@ namespace ServerCore
 
         static void OnAcceptHandler(Socket clientSocket)
         {
-            // 받는다.
-            byte[] recvBuff = new byte[1024];
-            int recvBytes = clientSocket.Receive(recvBuff);
-            string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
-            Console.WriteLine($"[From Client] {recvData}");
+            try
+            {
+                // 받는다.
+                Session session = new Session();
+                session.Init(clientSocket);
 
-            // 보낸다.
-            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-            clientSocket.Send(sendBuff);          // blocking.
+                // 보낸다.
+                byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
+                session.Send(sendBuff);          // blocking.
 
-            // 내보낸다.
-            clientSocket.Shutdown(SocketShutdown.Both);
-            clientSocket.Close();
+                Thread.Sleep(1000);
+
+                // 내보낸다.
+                session.Disconnect();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"OnAcceptHandler {e}");
+            }
         }
 
         static void Main(string[] args)
