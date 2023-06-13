@@ -26,6 +26,7 @@ namespace ServerCore
 
                 // 내보낸다.
                 session.Disconnect();
+                session.Disconnect(); // 실수로 연달아 호출?
             }
             catch (Exception e)
             {

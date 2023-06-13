@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace ServerCore
 {
     class Session
     {
         Socket _socket;
+        private int _disconnected = 0;
 
         public void Init(Socket socket)
         {
@@ -27,6 +29,10 @@ namespace ServerCore
 
         public void Disconnect()
         {
+            // 중복 호출로 인한 예외 방지.
+            if (Interlocked.Exchange(ref _disconnected, 1) == 1) 
+                return;
+
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
         }

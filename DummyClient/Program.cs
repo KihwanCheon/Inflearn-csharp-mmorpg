@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace DummyClient
 {
@@ -28,6 +29,7 @@ namespace DummyClient
                 {
                     byte[] sendBuff = Encoding.UTF8.GetBytes($"Hello World! {i}");
                     socket.Send(sendBuff);
+                    Thread.Sleep(1);
                 }
                 
                 // 받는다.
