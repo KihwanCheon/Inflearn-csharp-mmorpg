@@ -11,25 +11,37 @@ namespace ServerCore
         Socket _socket;
         private int _disconnected = 0;
 
+        object _lock = new object();
+        SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
+        private bool _pending = false;
+        private Queue<byte[]> _sendQueue = new Queue<byte[]>();
+
         public void Init(Socket socket)
         {
             _socket = socket;
+
+            // 수신.
             SocketAsyncEventArgs recvArgs = new SocketAsyncEventArgs();
             recvArgs.Completed += OnRecvCompleted;
             recvArgs.SetBuffer(new byte[1024], 0, 1024);
             // recvArgs.UserToken = 뭔가 구분할 값을 넣어서 쓸수 있음.
+
+            // 송신.
+            _sendArgs.Completed += OnSendCompleted;
 
             RegisterRecv(recvArgs);
         }
 
         public void Send(byte[] sendBuff)
         {
-            // _socket.Send(sendBuff);
-            SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
-            sendArgs.Completed += OnSendCompleted;
-            sendArgs.SetBuffer(sendBuff, 0, sendBuff.Length);
-
-            RegisterSend(sendArgs);
+            lock (_lock)
+            {
+                _sendQueue.Enqueue(sendBuff);
+                if (!_pending)
+                {
+                    RegisterSend();
+                }
+            }
         }
 
         public void Disconnect()
@@ -44,32 +56,45 @@ namespace ServerCore
 
         #region 네트워크 통신 PRIVATE_INTERNAL
 
-        void RegisterSend(SocketAsyncEventArgs args)
+        void RegisterSend()
         {
-            bool pending = _socket.SendAsync(args);
+            _pending = true;
+            byte[] buff = _sendQueue.Dequeue();
+            _sendArgs.SetBuffer(buff, 0, buff.Length);
+
+            bool pending = _socket.SendAsync(_sendArgs);
             if (!pending)
             {
-                OnSendCompleted(null, args);
+                OnSendCompleted(null, _sendArgs);
             }
         }
 
         private void OnSendCompleted(object sender, SocketAsyncEventArgs args)
         {
-            if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
+            lock (_lock)
             {
-                try
+                if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
                 {
-
+                    try
+                    {
+                        if (_sendQueue.Count > 0)
+                        {
+                            RegisterSend();
+                        }
+                        else
+                        {
+                            _pending = false;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"OnSendCompleted {e}");
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine($"OnSendCompleted {e}");
-
+                    Disconnect();
                 }
-            }
-            else
-            {
-                Disconnect();
             }
         }
 
