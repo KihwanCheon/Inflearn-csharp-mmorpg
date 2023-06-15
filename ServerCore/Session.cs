@@ -24,7 +24,12 @@ namespace ServerCore
 
         public void Send(byte[] sendBuff)
         {
-            _socket.Send(sendBuff);
+            // _socket.Send(sendBuff);
+            SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
+            sendArgs.Completed += OnSendCompleted;
+            sendArgs.SetBuffer(sendBuff, 0, sendBuff.Length);
+
+            RegisterSend(sendArgs);
         }
 
         public void Disconnect()
@@ -37,7 +42,36 @@ namespace ServerCore
             _socket.Close();
         }
 
-        #region PRIVATE_INTERNAL
+        #region 네트워크 통신 PRIVATE_INTERNAL
+
+        void RegisterSend(SocketAsyncEventArgs args)
+        {
+            bool pending = _socket.SendAsync(args);
+            if (!pending)
+            {
+                OnSendCompleted(null, args);
+            }
+        }
+
+        private void OnSendCompleted(object sender, SocketAsyncEventArgs args)
+        {
+            if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
+            {
+                try
+                {
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"OnSendCompleted {e}");
+
+                }
+            }
+            else
+            {
+                Disconnect();
+            }
+        }
 
         private void RegisterRecv(SocketAsyncEventArgs args)
         {
@@ -66,7 +100,7 @@ namespace ServerCore
             }
             else
             {
-                // TODO disconnect etc
+                Disconnect();
             }
         }
 
