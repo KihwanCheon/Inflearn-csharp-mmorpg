@@ -14,7 +14,8 @@ namespace ServerCore
         object _lock = new object();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
-        private bool _pending = false;
+        
+        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
         private Queue<byte[]> _sendQueue = new Queue<byte[]>();
 
         public void Init(Socket socket)
@@ -22,12 +23,12 @@ namespace ServerCore
             _socket = socket;
 
             // 수신.
-            _recvArgs.Completed += OnRecvCompleted;
+            _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
             _recvArgs.SetBuffer(new byte[1024], 0, 1024);
             // recvArgs.UserToken = 뭔가 구분할 값을 넣어서 쓸수 있음.
 
             // 송신.
-            _sendArgs.Completed += OnSendCompleted;
+            _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 
             RegisterRecv();
         }
@@ -37,10 +38,8 @@ namespace ServerCore
             lock (_lock)
             {
                 _sendQueue.Enqueue(sendBuff);
-                if (!_pending)
-                {
+                if (_pendingList.Count == 0)
                     RegisterSend();
-                }
             }
         }
 
@@ -58,15 +57,24 @@ namespace ServerCore
 
         void RegisterSend()
         {
-            _pending = true;
+            /* //_sendArgs.BufferList 와 같이 쓰면 안됨.
             byte[] buff = _sendQueue.Dequeue();
             _sendArgs.SetBuffer(buff, 0, buff.Length);
+            */
+            while (_sendQueue.Count > 0)
+            {
+                byte[] buff = _sendQueue.Dequeue();
+
+                // BufferList 에 개별로 넣으면 안됨
+                // _sendArgs.BufferList.Add(new ArraySegment<byte>(buff, 0, buff.Length));
+                _pendingList.Add(new ArraySegment<byte>(buff, 0, buff.Length));
+            }
+
+            _sendArgs.BufferList = _pendingList;
 
             bool pending = _socket.SendAsync(_sendArgs);
             if (!pending)
-            {
                 OnSendCompleted(null, _sendArgs);
-            }
         }
 
         private void OnSendCompleted(object sender, SocketAsyncEventArgs args)
@@ -77,14 +85,12 @@ namespace ServerCore
                 {
                     try
                     {
+                        _sendArgs.BufferList = null;
+                        _pendingList.Clear();
+                        Console.WriteLine($"Transferred bytes: {_sendArgs.BytesTransferred}");
+
                         if (_sendQueue.Count > 0)
-                        {
                             RegisterSend();
-                        }
-                        else
-                        {
-                            _pending = false;
-                        }
                     }
                     catch (Exception e)
                     {
