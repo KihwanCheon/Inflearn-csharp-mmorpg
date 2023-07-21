@@ -13,6 +13,7 @@ namespace ServerCore
 
         object _lock = new object();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
+        SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
         private bool _pending = false;
         private Queue<byte[]> _sendQueue = new Queue<byte[]>();
 
@@ -21,15 +22,14 @@ namespace ServerCore
             _socket = socket;
 
             // 수신.
-            SocketAsyncEventArgs recvArgs = new SocketAsyncEventArgs();
-            recvArgs.Completed += OnRecvCompleted;
-            recvArgs.SetBuffer(new byte[1024], 0, 1024);
+            _recvArgs.Completed += OnRecvCompleted;
+            _recvArgs.SetBuffer(new byte[1024], 0, 1024);
             // recvArgs.UserToken = 뭔가 구분할 값을 넣어서 쓸수 있음.
 
             // 송신.
             _sendArgs.Completed += OnSendCompleted;
 
-            RegisterRecv(recvArgs);
+            RegisterRecv();
         }
 
         public void Send(byte[] sendBuff)
@@ -98,12 +98,12 @@ namespace ServerCore
             }
         }
 
-        private void RegisterRecv(SocketAsyncEventArgs args)
+        private void RegisterRecv()
         {
-            bool pending = _socket.ReceiveAsync(args);
+            bool pending = _socket.ReceiveAsync(_recvArgs);
             if (!pending) // 등록하자마자 받은게 있으면.
             {
-                OnRecvCompleted(null, args);
+                OnRecvCompleted(null, _recvArgs);
             }
         }
 
@@ -116,7 +116,7 @@ namespace ServerCore
                     string recvData = Encoding.UTF8.GetString(args.Buffer, args.Offset, args.BytesTransferred);
                     Console.WriteLine($"[From Client] {recvData}");
 
-                    RegisterRecv(args);
+                    RegisterRecv();
                 }
                 catch (Exception e)
                 {
