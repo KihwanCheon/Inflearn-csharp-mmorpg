@@ -6,33 +6,49 @@ using System.Threading;
 
 namespace ServerCore
 {
+
+    class GameSession : Session
+    {
+        public override void OnConnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnConnected: {endPoint}");
+
+            // 보낸다.
+            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
+            Send(sendBuff);          // blocking.
+
+            Thread.Sleep(1000);
+
+            // 내보낸다.
+            Disconnect();
+            Disconnect(); // 실수로 연달아 호출?
+        }
+
+        public override void OnRecv(ArraySegment<byte> buffer)
+        {
+            if (buffer == null || buffer.Array == null)
+            {
+                Console.WriteLine($"[From Client] null array");
+                return;
+            }
+            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
+            Console.WriteLine($"[From Client] {recvData}");
+        }
+
+        public override void OnSend(int numOfBytes)
+        {
+            Console.WriteLine($"Transferred bytes: {numOfBytes}");
+        }
+
+        public override void OnDisconnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnDisconnected: {endPoint}");
+        }
+    }
+
     class Program
     {
         private static Listener _listener = new Listener();
-
-        static void OnAcceptHandler(Socket clientSocket)
-        {
-            try
-            {
-                // 받는다.
-                Session session = new Session();
-                session.Init(clientSocket);
-
-                // 보낸다.
-                byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-                session.Send(sendBuff);          // blocking.
-
-                Thread.Sleep(1000);
-
-                // 내보낸다.
-                session.Disconnect();
-                session.Disconnect(); // 실수로 연달아 호출?
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"OnAcceptHandler {e}");
-            }
-        }
 
         static void Main(string[] args)
         {
@@ -43,14 +59,13 @@ namespace ServerCore
 
             try
             {
-                _listener.Init(endPoint, OnAcceptHandler);
+                _listener.Init(endPoint, () => new GameSession());
                 Console.WriteLine("Listening ....");
 
                 while (true)
                 {
                     ; //
                 }
-
             }
             catch (Exception e)
             {

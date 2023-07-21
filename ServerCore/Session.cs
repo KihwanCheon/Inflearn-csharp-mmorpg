@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
 namespace ServerCore
 {
-    class Session
+    abstract class Session
     {
         Socket _socket;
         private int _disconnected = 0;
@@ -14,20 +15,26 @@ namespace ServerCore
         object _lock = new object();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
-        
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
         private Queue<byte[]> _sendQueue = new Queue<byte[]>();
 
-        public void Init(Socket socket)
+        #region inheritable interface
+
+        public abstract void OnConnected(EndPoint endPoint);
+        public abstract void OnRecv(ArraySegment<byte> buffer);
+        public abstract void OnSend(int numOfBytes);
+        public abstract void OnDisconnected(EndPoint endPoint);
+
+        #endregion
+
+        public void Start(Socket socket)
         {
             _socket = socket;
 
-            // 수신.
             _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
             _recvArgs.SetBuffer(new byte[1024], 0, 1024);
             // recvArgs.UserToken = 뭔가 구분할 값을 넣어서 쓸수 있음.
 
-            // 송신.
             _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 
             RegisterRecv();
@@ -48,6 +55,8 @@ namespace ServerCore
             // 중복 호출로 인한 예외 방지.
             if (Interlocked.Exchange(ref _disconnected, 1) == 1) 
                 return;
+
+            OnDisconnected(_socket.RemoteEndPoint);
 
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
@@ -87,8 +96,9 @@ namespace ServerCore
                     {
                         _sendArgs.BufferList = null;
                         _pendingList.Clear();
-                        Console.WriteLine($"Transferred bytes: {_sendArgs.BytesTransferred}");
 
+                        OnSend(_sendArgs.BytesTransferred);
+                        
                         if (_sendQueue.Count > 0)
                             RegisterSend();
                     }
@@ -119,9 +129,7 @@ namespace ServerCore
             {
                 try
                 {
-                    string recvData = Encoding.UTF8.GetString(args.Buffer, args.Offset, args.BytesTransferred);
-                    Console.WriteLine($"[From Client] {recvData}");
-
+                    OnRecv(new ArraySegment<byte>(args.Buffer, args.Offset, args.BytesTransferred));
                     RegisterRecv();
                 }
                 catch (Exception e)
