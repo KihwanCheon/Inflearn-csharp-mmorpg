@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace ServerCore
 {
-    class Listener
+    public class Listener
     {
         private Socket _listenSocket;
         private Func<Session> _sessionFactory;

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace ServerCore
 {
-    class Connector
+    public class Connector
     {
         private Func<Session> _sessionFactory;
 
@@ -27,6 +27,8 @@ namespace ServerCore
             if (socket == null) return;
 
             bool pending = socket.ConnectAsync(args);
+            if (!pending)
+                OnConnectCompleted(null, args);
 
         }
 
