@@ -30,7 +30,7 @@ namespace ServerCore
             get { return new ArraySegment<byte>(_buffer.Array, _buffer.Offset +_writePos, FreeSize); }
         }
 
-        public void Clear()
+        public void Clean()
         {
             int dataSize = DataSize; // 복사하고 Data 메서드 사용않는다. 커서변수를 수정하면, 메서드 반환값이 달라진다.
             if (dataSize == 0) // 데이터 없으면 커서만 이동.

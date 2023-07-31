@@ -24,15 +24,16 @@ namespace Server
             Disconnect(); // 실수로 연달아 호출?
         }
 
-        public override void OnRecv(ArraySegment<byte> buffer)
+        public override int OnRecv(ArraySegment<byte> buffer)
         {
             if (buffer == null || buffer.Array == null)
             {
                 Console.WriteLine($"[From Client] null array");
-                return;
+                return -1;
             }
             string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
             Console.WriteLine($"[From Client] {recvData}");
+            return buffer.Count;
         }
 
         public override void OnSend(int numOfBytes)
