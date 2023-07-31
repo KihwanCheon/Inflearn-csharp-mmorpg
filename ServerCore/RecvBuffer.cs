@@ -65,7 +65,7 @@ namespace ServerCore
             }
 
             _writePos += numOfBytes;
-            return false;
+            return true;
         }
     }
 }

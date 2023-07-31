@@ -138,6 +138,7 @@ namespace ServerCore
                     // Write 커서 이동.
                     if (!_recvBuffer.OnWrite(args.BytesTransferred))
                     {
+                        Console.WriteLine("OnRecvCompleted failed : recvBuffer.OnWrite");
                         Disconnect();
                         return;
                     }
@@ -145,12 +146,14 @@ namespace ServerCore
                     int processLen = OnRecv(_recvBuffer.ReadSegment);
                     if (processLen < 0 || _recvBuffer.DataSize < processLen)
                     {
+                        Console.WriteLine("OnRecvCompleted failed : OnRecv");
                         Disconnect();
                         return;
                     }
 
                     if (!_recvBuffer.OnRead(processLen))
                     {
+                        Console.WriteLine("OnRecvCompleted failed : recvBuffer.OnRead");
                         Disconnect();
                         return;
                     }
