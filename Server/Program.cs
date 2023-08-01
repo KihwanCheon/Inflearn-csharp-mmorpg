@@ -1,37 +1,34 @@
 ﻿using System;
 using System.Net;
-using System.Text;
 using System.Threading;
 using ServerCore;
 
 namespace Server
 {
-    class Kinigh
+    class Packet
     {
-        public int hp;
-        public int attack;
+        public ushort size;
+        public ushort packatId;
     }
 
-    class GameSession : Session
+
+    class GameSession : PacketSession
     {
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected: {endPoint}");
 
-            // 보낸다.
-            // byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-            // Send(sendBuff);          // blocking.
+            /*ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
 
-            ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
-            var knight = new Kinigh { hp = 100, attack = 10 };
-            byte[] buffer = BitConverter.GetBytes(knight.hp);
-            byte[] buffer2 = BitConverter.GetBytes(knight.attack);
+            var packet = new Packet { size = 4, packatId = 7 };
+            byte[] buffer = BitConverter.GetBytes(packet.size);
+            byte[] buffer2 = BitConverter.GetBytes(packet.packatId);
 
             Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
             Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
 
             ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
-            Send(sendBuff);
+            Send(sendBuff);*/
 
             Thread.Sleep(1000);
 
@@ -40,17 +37,14 @@ namespace Server
             Disconnect(); // 실수로 연달아 호출?
         }
 
-        public override int OnRecv(ArraySegment<byte> buffer)
+        public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            if (buffer == null || buffer.Array == null)
-            {
-                Console.WriteLine($"[From Client] null array");
-                return -1;
-            }
-            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-            Console.WriteLine($"[From Client] {recvData}");
-            return buffer.Count;
+            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + HeaderSize);
+
+            Console.WriteLine($"Recv packetId: {id}, size: {size}");
         }
+
 
         public override void OnSend(int numOfBytes)
         {

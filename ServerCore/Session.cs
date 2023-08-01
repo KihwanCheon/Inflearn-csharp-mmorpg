@@ -7,6 +7,39 @@ using System.Threading;
 
 namespace ServerCore
 {
+    public abstract class PacketSession : Session
+    {
+        public static readonly int HeaderSize = 2;
+
+        // [size(2)][packetId(2)][.....][size(2)][packetId(2)][.....]
+        public sealed override int OnRecv(ArraySegment<byte> buffer)
+        {
+            int processLen = 0;
+            while (true)
+            {
+                if (buffer.Count < HeaderSize)
+                {
+                    Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than headerSize");
+                    break;
+                }
+
+                ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+                if (buffer.Count < size)
+                {
+                    Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than packet size({size})");
+                    break;
+                }
+
+                OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, size)); //packet 1 ea.
+                processLen += size;
+                buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + size, buffer.Count - size);
+            }
+            return processLen;
+        }
+
+        public abstract void OnRecvPacket(ArraySegment<byte> buffer);
+    }
+
     public abstract class Session
     {
         Socket _socket;
