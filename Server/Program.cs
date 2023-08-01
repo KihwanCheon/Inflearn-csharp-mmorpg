@@ -22,13 +22,16 @@ namespace Server
             // byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
             // Send(sendBuff);          // blocking.
 
-            byte[] sendBuff = new byte[1024];
+            ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
             var knight = new Kinigh { hp = 100, attack = 10 };
             byte[] buffer = BitConverter.GetBytes(knight.hp);
             byte[] buffer2 = BitConverter.GetBytes(knight.attack);
 
-            Array.Copy(buffer, 0, sendBuff, 0, buffer.Length);
-            Array.Copy(buffer2, 0, sendBuff, buffer.Length, buffer2.Length);
+            Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
+            Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
+
+            ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
+            Send(sendBuff);
 
             Thread.Sleep(1000);
 

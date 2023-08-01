@@ -18,7 +18,7 @@ namespace ServerCore
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
-        private Queue<byte[]> _sendQueue = new Queue<byte[]>();
+        private Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
 
         #region inheritable interface
 
@@ -41,7 +41,7 @@ namespace ServerCore
             RegisterRecv();
         }
 
-        public void Send(byte[] sendBuff)
+        public void Send(ArraySegment<byte> sendBuff)
         {
             lock (_lock)
             {
@@ -73,11 +73,11 @@ namespace ServerCore
             */
             while (_sendQueue.Count > 0)
             {
-                byte[] buff = _sendQueue.Dequeue();
+                ArraySegment<byte> buff = _sendQueue.Dequeue();
 
                 // BufferList 에 개별로 넣으면 안됨
                 // _sendArgs.BufferList.Add(new ArraySegment<byte>(buff, 0, buff.Length));
-                _pendingList.Add(new ArraySegment<byte>(buff, 0, buff.Length));
+                _pendingList.Add(buff);
             }
 
             _sendArgs.BufferList = _pendingList;
