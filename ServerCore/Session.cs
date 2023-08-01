@@ -14,6 +14,7 @@ namespace ServerCore
         // [size(2)][packetId(2)][.....][size(2)][packetId(2)][.....]
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {
+            int orgCnt = buffer.Count;
             int processLen = 0;
             while (true)
             {
@@ -32,6 +33,13 @@ namespace ServerCore
 
                 OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, size)); //packet 1 ea.
                 processLen += size;
+
+                if (orgCnt == processLen || orgCnt < processLen + HeaderSize)
+                {
+                    Console.WriteLine($"OnRecv(buffer), all of buffer({orgCnt}) is proceeded({processLen})");
+                    break;
+                }
+
                 buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + size, buffer.Count - size);
             }
             return processLen;
