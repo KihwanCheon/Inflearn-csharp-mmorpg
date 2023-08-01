@@ -6,6 +6,11 @@ using ServerCore;
 
 namespace Server
 {
+    class Kinigh
+    {
+        public int hp;
+        public int attack;
+    }
 
     class GameSession : Session
     {
@@ -14,8 +19,16 @@ namespace Server
             Console.WriteLine($"OnConnected: {endPoint}");
 
             // 보낸다.
-            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-            Send(sendBuff);          // blocking.
+            // byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
+            // Send(sendBuff);          // blocking.
+
+            byte[] sendBuff = new byte[1024];
+            var knight = new Kinigh { hp = 100, attack = 10 };
+            byte[] buffer = BitConverter.GetBytes(knight.hp);
+            byte[] buffer2 = BitConverter.GetBytes(knight.attack);
+
+            Array.Copy(buffer, 0, sendBuff, 0, buffer.Length);
+            Array.Copy(buffer2, 0, sendBuff, buffer.Length, buffer2.Length);
 
             Thread.Sleep(1000);
 
