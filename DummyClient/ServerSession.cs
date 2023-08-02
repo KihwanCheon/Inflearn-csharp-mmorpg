@@ -11,6 +11,23 @@ namespace DummyClient
         public ushort packatId;
     }
 
+    public enum PacketID
+    {
+        PlayerInfoReq = 1,
+        PlayerInfoOk = 2
+    }
+
+    class PlayerInfoReq : Packet
+    {
+        public long playerId;
+    }
+
+    class PlayerInfoOk: Packet
+    {
+        public int hp;
+        public int attack;
+    }
+
     /**
      * 서버의 대리자.
      */
@@ -20,22 +37,24 @@ namespace DummyClient
         {
             Console.WriteLine($"OnConnected: {endPoint}");
 
-            // 보낸다.
-            for (int i = 0; i < 5; i++)
-            {
-                ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
+            var packet = new PlayerInfoReq { size = 12, packatId = (ushort)PacketID.PlayerInfoReq, playerId = 333};
 
-                var packet = new Packet { size = 4, packatId = 7 };
-                byte[] buffer = BitConverter.GetBytes(packet.size);
-                byte[] buffer2 = BitConverter.GetBytes(packet.packatId);
+            ArraySegment<byte> s = SendBufferHelper.Open(4096);
+            
+            byte[] size = BitConverter.GetBytes(packet.size);  // 2
+            byte[] packetId = BitConverter.GetBytes(packet.packatId); // 2
+            byte[] playerId = BitConverter.GetBytes(packet.playerId); // 8
 
-                Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
-                Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
+            int count = 0;
+            Array.Copy(size, 0, s.Array, s.Offset + 0, size.Length);
+            count += size.Length;
+            Array.Copy(packetId, 0, s.Array, s.Offset + count, packetId.Length);
+            count += packetId.Length;
+            Array.Copy(playerId, 0, s.Array, s.Offset + count, playerId.Length);
+            count += playerId.Length;
+            ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
 
-                ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
-
-                Send(sendBuff);
-            }
+            Send(sendBuff);
         }
 
         public override int OnRecv(ArraySegment<byte> buffer)

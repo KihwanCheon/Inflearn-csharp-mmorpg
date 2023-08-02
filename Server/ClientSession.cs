@@ -11,6 +11,24 @@ namespace Server
         public ushort packatId;
     }
 
+    public enum PacketID
+    {
+        PlayerInfoReq = 1,
+        PlayerInfoOk = 2
+    }
+
+    class PlayerInfoReq : Packet
+    {
+        public long playerId;
+    }
+
+    class PlayerInfoOk : Packet
+    {
+        public int hp;
+        public int attack;
+    }
+
+
     public class ClientSession : PacketSession
     {
         public override void OnConnected(EndPoint endPoint)
@@ -38,8 +56,23 @@ namespace Server
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
+            int count = 0;
             ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            count += 2;
             ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + HeaderSize);
+            count += 2;
+
+
+            switch ((PacketID) id)
+            {
+                case PacketID.PlayerInfoReq:
+                {
+                    long playerId = BitConverter.ToInt64(buffer.Array, buffer.Offset + count);
+                    count += 8;
+                    Console.WriteLine($"PlayerInfoReq : {playerId}");
+                }
+                break;
+            }
 
             Console.WriteLine($"Recv packetId: {id}, size: {size}");
         }
