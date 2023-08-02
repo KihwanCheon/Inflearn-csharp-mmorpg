@@ -29,6 +29,7 @@ namespace Server
     }
 
 
+    /// <summary>클라 대리자</summary>
     public class ClientSession : PacketSession
     {
         public override void OnConnected(EndPoint endPoint)
@@ -58,10 +59,9 @@ namespace Server
         {
             int count = 0;
             ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+            count += HeaderSize;
+            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
             count += 2;
-            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + HeaderSize);
-            count += 2;
-
 
             switch ((PacketID) id)
             {

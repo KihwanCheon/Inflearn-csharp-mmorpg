@@ -28,33 +28,43 @@ namespace DummyClient
         public int attack;
     }
 
-    /**
-     * 서버의 대리자.
-     */
+    /// <summary>서버 대리자</summary>
     public class ServerSession : Session
     {
+        /**
+         * C++ 처럼 포인터를 직접적으로 사용하기.
+         * TryWriteBytes 대용으로...
+         * unsafe!
+         */
+        static unsafe void ToBytes(byte[] array, int offset, ulong value)
+        {
+            fixed (byte* ptr = &array[offset])
+                *(ulong*)ptr = value;
+        }
+
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected: {endPoint}");
 
-            var packet = new PlayerInfoReq { size = 12, packatId = (ushort)PacketID.PlayerInfoReq, playerId = 333};
+            var packet = new PlayerInfoReq { packatId = (ushort)PacketID.PlayerInfoReq, playerId = 333};
 
             ArraySegment<byte> s = SendBufferHelper.Open(4096);
-            
-            byte[] size = BitConverter.GetBytes(packet.size);  // 2
-            byte[] packetId = BitConverter.GetBytes(packet.packatId); // 2
-            byte[] playerId = BitConverter.GetBytes(packet.playerId); // 8
+            bool success = true;
+            ushort count = 0;
+            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.size);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.packatId);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.playerId);
+            count += 8;
 
-            int count = 0;
-            Array.Copy(size, 0, s.Array, s.Offset + 0, size.Length);
-            count += size.Length;
-            Array.Copy(packetId, 0, s.Array, s.Offset + count, packetId.Length);
-            count += packetId.Length;
-            Array.Copy(playerId, 0, s.Array, s.Offset + count, playerId.Length);
-            count += playerId.Length;
-            ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
+            // write count at last, after packet counted
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
 
-            Send(sendBuff);
+            ArraySegment<byte> sendBuff = SendBufferHelper.Close(count);
+
+            if (success)
+                Send(sendBuff);
         }
 
         public override int OnRecv(ArraySegment<byte> buffer)
