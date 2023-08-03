@@ -42,7 +42,7 @@ namespace DummyClient
             count += 8;
 
             // write count at last, after packet counted
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), (ushort)4 /*count*/);
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
 
             if (!success)
                 return null;
