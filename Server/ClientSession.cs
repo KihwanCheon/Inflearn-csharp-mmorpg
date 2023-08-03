@@ -23,43 +23,45 @@ namespace Server
     class PlayerInfoReq : Packet
     {
         public long playerId;
+        public string name;
 
         public PlayerInfoReq()
         {
             packatId = (ushort)PacketID.PlayerInfoReq;
         }
 
-        public override ArraySegment<byte> Write()
+        public override void Read(ArraySegment<byte> segment)
         {
-            ArraySegment<byte> s = SendBufferHelper.Open(4096);
-            bool success = true;
-            ushort count = 0;
-            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.size);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.packatId);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
-            count += 8;
-
-            // write count at last, after packet counted
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
-
-            if (!success)
-                return null;
-
-            return SendBufferHelper.Close(count);
-        }
-
-        public override void Read(ArraySegment<byte> s)
-        {
+            ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             ushort count = 0;
             // ushort size = BitConverter.ToUInt16(s.Array, s.Offset);
             count += 2;
             // ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
             count += 2;
-            // this.playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
-            playerId = BitConverter.ToInt64(new ReadOnlySpan<byte>(s.Array, s.Offset + count, s.Count - count));
+            // playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
+            playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
             count += 8;
+        }
+
+        public override ArraySegment<byte> Write()
+        {
+            ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+            Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
+            bool success = true;
+            ushort count = 0;
+
+            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), size);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), packatId);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), playerId);
+            count += sizeof(long);
+            success &= BitConverter.TryWriteBytes(s, count); // write count at last, after packet counted
+
+            if (!success)
+                return null;
+
+            return SendBufferHelper.Close(count);
         }
     }
 

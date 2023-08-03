@@ -23,6 +23,7 @@ namespace DummyClient
     class PlayerInfoReq : Packet
     {
         public long playerId;
+        public string name;
 
         public PlayerInfoReq()
         {
@@ -31,18 +32,18 @@ namespace DummyClient
 
         public override ArraySegment<byte> Write()
         {
-            ArraySegment<byte> s = SendBufferHelper.Open(4096);
+            ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+            Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
             bool success = true;
             ushort count = 0;
-            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.size);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.packatId);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
-            count += 8;
 
-            // write count at last, after packet counted
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), size);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), packatId);
+            count += sizeof(ushort);
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), playerId);
+            count += sizeof(long);
+            success &= BitConverter.TryWriteBytes(s, count); // write count at last, after packet counted
 
             if (!success)
                 return null;
@@ -50,15 +51,16 @@ namespace DummyClient
             return SendBufferHelper.Close(count);
         }
 
-        public override void Read(ArraySegment<byte> s)
+        public override void Read(ArraySegment<byte> segment)
         {
+            ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
             ushort count = 0;
             // ushort size = BitConverter.ToUInt16(s.Array, s.Offset);
             count += 2;
             // ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
             count += 2;
             // playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
-            playerId = BitConverter.ToInt64(new ReadOnlySpan<byte>(s.Array, s.Offset + count, s.Count - count));
+            playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
             count += 8;
         }
     }
