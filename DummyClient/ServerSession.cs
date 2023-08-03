@@ -42,7 +42,7 @@ namespace DummyClient
             count += 8;
 
             // write count at last, after packet counted
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), (ushort)4 /*count*/);
 
             if (!success)
                 return null;
@@ -57,7 +57,8 @@ namespace DummyClient
             count += 2;
             // ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
             count += 2;
-            playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
+            // playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
+            playerId = BitConverter.ToInt64(new ReadOnlySpan<byte>(s.Array, s.Offset + count, s.Count - count));
             count += 8;
         }
     }
