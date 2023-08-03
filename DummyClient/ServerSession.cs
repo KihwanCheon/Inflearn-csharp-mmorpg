@@ -5,10 +5,13 @@ using ServerCore;
 
 namespace DummyClient
 {
-    class Packet
+    public abstract class  Packet
     {
         public ushort size;
         public ushort packatId;
+
+        public abstract ArraySegment<byte> Write();
+        public abstract void Read(ArraySegment<byte> s);
     }
 
     public enum PacketID
@@ -20,13 +23,50 @@ namespace DummyClient
     class PlayerInfoReq : Packet
     {
         public long playerId;
+
+        public PlayerInfoReq()
+        {
+            packatId = (ushort)PacketID.PlayerInfoReq;
+        }
+
+        public override ArraySegment<byte> Write()
+        {
+            ArraySegment<byte> s = SendBufferHelper.Open(4096);
+            bool success = true;
+            ushort count = 0;
+            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.size);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.packatId);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
+            count += 8;
+
+            // write count at last, after packet counted
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+
+            if (!success)
+                return null;
+
+            return SendBufferHelper.Close(count);
+        }
+
+        public override void Read(ArraySegment<byte> s)
+        {
+            ushort count = 0;
+            // ushort size = BitConverter.ToUInt16(s.Array, s.Offset);
+            count += 2;
+            // ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
+            count += 2;
+            playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
+            count += 8;
+        }
     }
 
-    class PlayerInfoOk: Packet
-    {
-        public int hp;
-        public int attack;
-    }
+    // class PlayerInfoOk: Packet
+    // {
+    //     public int hp;
+    //     public int attack;
+    // }
 
     /// <summary>서버 대리자</summary>
     public class ServerSession : Session
@@ -46,25 +86,12 @@ namespace DummyClient
         {
             Console.WriteLine($"OnConnected: {endPoint}");
 
-            var packet = new PlayerInfoReq { packatId = (ushort)PacketID.PlayerInfoReq, playerId = 333};
+            var packet = new PlayerInfoReq { playerId = 333};
+            
+            ArraySegment<byte> s = packet.Write();
 
-            ArraySegment<byte> s = SendBufferHelper.Open(4096);
-            bool success = true;
-            ushort count = 0;
-            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.size);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.packatId);
-            count += 2;
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.playerId);
-            count += 8;
-
-            // write count at last, after packet counted
-            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
-
-            ArraySegment<byte> sendBuff = SendBufferHelper.Close(count);
-
-            if (success)
-                Send(sendBuff);
+            if (s != null)
+                Send(s);
         }
 
         public override int OnRecv(ArraySegment<byte> buffer)

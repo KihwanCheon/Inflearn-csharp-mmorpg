@@ -5,10 +5,13 @@ using ServerCore;
 
 namespace Server
 {
-    class Packet
+    public abstract class Packet
     {
         public ushort size;
         public ushort packatId;
+
+        public abstract ArraySegment<byte> Write();
+        public abstract void Read(ArraySegment<byte> s);
     }
 
     public enum PacketID
@@ -20,14 +23,50 @@ namespace Server
     class PlayerInfoReq : Packet
     {
         public long playerId;
+
+        public PlayerInfoReq()
+        {
+            packatId = (ushort)PacketID.PlayerInfoReq;
+        }
+
+        public override ArraySegment<byte> Write()
+        {
+            ArraySegment<byte> s = SendBufferHelper.Open(4096);
+            bool success = true;
+            ushort count = 0;
+            // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), packet.size);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.packatId);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
+            count += 8;
+
+            // write count at last, after packet counted
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+
+            if (!success)
+                return null;
+
+            return SendBufferHelper.Close(count);
+        }
+
+        public override void Read(ArraySegment<byte> s)
+        {
+            ushort count = 0;
+            // ushort size = BitConverter.ToUInt16(s.Array, s.Offset);
+            count += 2;
+            // ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
+            count += 2;
+            this.playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
+            count += 8;
+        }
     }
 
-    class PlayerInfoOk : Packet
-    {
-        public int hp;
-        public int attack;
-    }
-
+    // class PlayerInfoOk: Packet
+    // {
+    //     public int hp;
+    //     public int attack;
+    // }
 
     /// <summary>클라 대리자</summary>
     public class ClientSession : PacketSession
@@ -35,18 +74,6 @@ namespace Server
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected: {endPoint}");
-
-            /*ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
-
-            var packet = new Packet { size = 4, packatId = 7 };
-            byte[] buffer = BitConverter.GetBytes(packet.size);
-            byte[] buffer2 = BitConverter.GetBytes(packet.packatId);
-
-            Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
-            Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
-
-            ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length + buffer2.Length);
-            Send(sendBuff);*/
 
             Thread.Sleep(1000);
 
@@ -57,7 +84,7 @@ namespace Server
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            int count = 0;
+            ushort count = 0;
             ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
             count += HeaderSize;
             ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
@@ -67,17 +94,16 @@ namespace Server
             {
                 case PacketID.PlayerInfoReq:
                 {
-                    long playerId = BitConverter.ToInt64(buffer.Array, buffer.Offset + count);
-                    count += 8;
-                    Console.WriteLine($"PlayerInfoReq : {playerId}");
+                    var req = new PlayerInfoReq();
+                    req.Read(buffer);
+                    Console.WriteLine($"PlayerInfoReq : {req.playerId}");
                 }
                 break;
             }
 
             Console.WriteLine($"Recv packetId: {id}, size: {size}");
         }
-
-
+        
         public override void OnSend(int numOfBytes)
         {
             Console.WriteLine($"To Client Transferred bytes: {numOfBytes}");
