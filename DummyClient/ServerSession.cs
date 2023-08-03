@@ -29,6 +29,22 @@ namespace DummyClient
         {
             packatId = (ushort)PacketID.PlayerInfoReq;
         }
+        
+        public override void Read(ArraySegment<byte> segment)
+        {
+            ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+            ushort count = 0;
+            count += sizeof(ushort);    // for this.size
+            count += sizeof(ushort);    // for this.packetId
+            playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
+            count += sizeof(long);      // for this.playerId
+
+            // string
+            ushort nameLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+            count += sizeof(ushort);    // for nameLen
+            name = Encoding.Unicode.GetString(s.Slice(count, nameLen));
+            count += nameLen;           // for this.name
+        }
 
         public override ArraySegment<byte> Write()
         {
@@ -38,30 +54,26 @@ namespace DummyClient
             ushort count = 0;
 
             // success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), size);
-            count += sizeof(ushort);
+            count += sizeof(ushort);    // for this.size
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), packatId);
-            count += sizeof(ushort);
+            count += sizeof(ushort);    // for this.packetId
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), playerId);
-            count += sizeof(long);
-            success &= BitConverter.TryWriteBytes(s, count); // write count at last, after packet counted
+            count += sizeof(long);      // for this.playerId
+
+            // string name len [2], byte[]
+            ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(name); // use utf16
+            success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
+            count += sizeof(ushort);
+            Array.Copy(Encoding.Unicode.GetBytes(name), 0, segment.Array, count, nameLen);
+            count += nameLen;
+
+            // write count at last, after packet counted
+            success &= BitConverter.TryWriteBytes(s, count);
 
             if (!success)
                 return null;
 
             return SendBufferHelper.Close(count);
-        }
-
-        public override void Read(ArraySegment<byte> segment)
-        {
-            ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
-            ushort count = 0;
-            // ushort size = BitConverter.ToUInt16(s.Array, s.Offset);
-            count += 2;
-            // ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count);
-            count += 2;
-            // playerId = BitConverter.ToInt64(s.Array, s.Offset + count);
-            playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
-            count += 8;
         }
     }
 
@@ -89,7 +101,7 @@ namespace DummyClient
         {
             Console.WriteLine($"OnConnected: {endPoint}");
 
-            var packet = new PlayerInfoReq { playerId = 333};
+            var packet = new PlayerInfoReq { playerId = 333, name = "TestId"};
             
             ArraySegment<byte> s = packet.Write();
 
