@@ -61,10 +61,17 @@ namespace DummyClient
             count += sizeof(long);      // for this.playerId
 
             // string name len [2], byte[]
-            ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(name); // use utf16
+            // ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(name); // use utf16
+            // success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
+            // count += sizeof(ushort);
+            // Array.Copy(Encoding.Unicode.GetBytes(name), 0, segment.Array, count, nameLen);
+            // count += nameLen;
+
+            // string name
+            ushort nameLenCount = sizeof(ushort);
+            ushort nameLen = (ushort)Encoding.Unicode.GetBytes(name, 0, name.Length, segment.Array, segment.Offset + count + nameLenCount);
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
-            count += sizeof(ushort);
-            Array.Copy(Encoding.Unicode.GetBytes(name), 0, segment.Array, count, nameLen);
+            count += nameLenCount;
             count += nameLen;
 
             // write count at last, after packet counted
