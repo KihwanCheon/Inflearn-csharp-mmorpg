@@ -129,12 +129,6 @@ namespace DummyClient
         }
     }
 
-    // class PlayerInfoOk: Packet
-    // {
-    //     public int hp;
-    //     public int attack;
-    // }
-
     /// <summary>서버 대리자</summary>
     public class ServerSession : Session
     {

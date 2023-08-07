@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 
 namespace PacketGenerator
 {
     internal class Program
     {
+        private static string genPackets = "";
+
         static void Main(string[] args)
         {
             XmlReaderSettings settings = new XmlReaderSettings()
@@ -23,9 +26,14 @@ namespace PacketGenerator
                     
                     // Console.WriteLine(r.Name +" "+ r["name"]);
                 }
+
+                File.WriteAllText("GenPackets.cs", genPackets);
             }
         }
 
+
+        /// <see cref="PacketFormats.PacketFormat"/>
+        /// {0} 패킷이름
         private static void ParsePacket(XmlReader r)
         {
             if (r.NodeType == XmlNodeType.EndElement)
@@ -44,12 +52,23 @@ namespace PacketGenerator
                 return;
             }
 
-            ParseMembers(r);
+            Tuple<string, string, string> t = ParseMembers(r);
+            
+
+            genPackets += string.Format(PacketFormats.PacketFormat, packetName, t.Item1, t.Item2, t.Item3);
         }
 
-        private static void ParseMembers(XmlReader r)
+        /// <see cref="PacketFormats.MemberFormat"/>
+        /// {1} 멤버이름
+        /// {2} 멤버변수 Read
+        /// {3} 멤버변수 Write
+        private static Tuple<string, string, string> ParseMembers(XmlReader r)
         {
             string packetName = r["name"];
+
+            string memberCode = "";
+            string readCode = "";
+            string writeCode = "";
 
             int depth = r.Depth + 1;
             while (r.Read())
@@ -61,25 +80,59 @@ namespace PacketGenerator
                 if (string.IsNullOrEmpty(memberName))
                 {
                     Console.WriteLine($"member without name ${r.Name}");
-                    return;
+                    return null;
                 }
+
+                if (!string.IsNullOrEmpty(memberCode)) memberCode += Environment.NewLine;
+                if (!string.IsNullOrEmpty(readCode)) readCode += Environment.NewLine;
+                if (!string.IsNullOrEmpty(writeCode)) writeCode += Environment.NewLine;
+
 
                 string memberType = r.Name.ToLower();
 
                 switch (memberType)
                 {
-                    case "bool": break;
-                    case "byte": break;
-                    case "short": break;
-                    case "ushort": break;
-                    case "int": break;
-                    case "long": break;
-                    case "float": break;
-                    case "double": break;
-                    case "string": break;
+                    case "bool":
+                    case "short":
+                    case "ushort":
+                    case "int":
+                    case "long":
+                    case "float":
+                    case "double": 
+                        memberCode += string.Format(PacketFormats.MemberFormat, memberType, memberName);
+                        readCode += string.Format(PacketFormats.ReadFormat, memberName, ToMemberType(memberType), memberType);
+                        writeCode += string.Format(PacketFormats.WriteFormat, memberName, memberType);
+                        break;
+                    case "string":
+                        memberCode += string.Format(PacketFormats.MemberFormat, memberType, memberName);
+                        readCode += string.Format(PacketFormats.ReadStringFormat, memberName);
+                        writeCode += string.Format(PacketFormats.WriteStringFormat, memberName);
+                        break;
                     case "list": break;
+
                     default: break;
                 }
+            }
+
+            memberCode = memberCode.Replace("\n", "\n    ");
+            readCode = readCode.Replace("\n", "\n        ");
+            writeCode = writeCode.Replace("\n", "\n        ");
+
+            return new Tuple<string, string, string>(memberCode, readCode, writeCode);
+        }
+
+        public static string ToMemberType(string memberType)
+        {
+            switch (memberType)
+            {
+                case "bool": return "ToBoolean";
+                case "short": return "ToInt16";
+                case "ushort": return "ToUInt16";
+                case "int": return "ToInt32";
+                case "long": return "ToInt64";
+                case "float": return "ToSingle";
+                case "double": return "ToDouble";
+                default: return "";
             }
         }
     }

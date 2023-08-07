@@ -130,12 +130,6 @@ namespace Server
         }
     }
 
-    // class PlayerInfoOk: Packet
-    // {
-    //     public int hp;
-    //     public int attack;
-    // }
-
     /// <summary>클라 대리자</summary>
     public class ClientSession : PacketSession
     {
