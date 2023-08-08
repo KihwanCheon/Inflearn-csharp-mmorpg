@@ -6,7 +6,9 @@ namespace PacketGenerator
 {
     internal class Program
     {
-        private static string genPackets = "";
+        private static string _genPackets = "";
+        private static ushort _packetId = 0;
+        private static string _packetEnums = "";
 
         static void Main(string[] args)
         {
@@ -27,7 +29,9 @@ namespace PacketGenerator
                     // Console.WriteLine(r.Name +" "+ r["name"]);
                 }
 
-                File.WriteAllText("GenPackets.cs", genPackets);
+                _genPackets = string.Format(PacketFormats.FileFormat, _packetEnums, _genPackets);
+
+                File.WriteAllText("GenPackets.cs", _genPackets);
             }
         }
 
@@ -55,7 +59,8 @@ namespace PacketGenerator
             Tuple<string, string, string> t = ParseMembers(r);
             
 
-            genPackets += string.Format(PacketFormats.PacketFormat, packetName, t.Item1, t.Item2, t.Item3);
+            _genPackets += string.Format(PacketFormats.PacketFormat, packetName, t.Item1, t.Item2, t.Item3);
+            _packetEnums += string.Format(PacketFormats.EnumFormat, packetName, ++_packetId) + Environment.NewLine + "\t";
         }
 
         /// <see cref="PacketFormats.MemberFormat"/>
