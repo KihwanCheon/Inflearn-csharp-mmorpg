@@ -108,7 +108,16 @@ namespace PacketGenerator
                         readCode += string.Format(PacketFormats.ReadStringFormat, memberName);
                         writeCode += string.Format(PacketFormats.WriteStringFormat, memberName);
                         break;
-                    case "list": break;
+                    case "list":
+                        var t = ParseList(r);
+                        if (t != null)
+                        {
+                            memberCode += t.Item1;
+                            readCode += t.Item2;
+                            writeCode += t.Item3;
+                        }
+                        
+                        break;
 
                     default: break;
                 }
@@ -119,6 +128,25 @@ namespace PacketGenerator
             writeCode = writeCode.Replace("\n", "\n        ");
 
             return new Tuple<string, string, string>(memberCode, readCode, writeCode);
+        }
+
+        private static Tuple<string, string, string> ParseList(XmlReader r)
+        {
+            string listType = r["type"];
+            string listName = r["name"];
+
+            if (string.IsNullOrEmpty(listName) || string.IsNullOrEmpty(listType))
+            {
+                Console.WriteLine($"List without name({listName}) or type({listType})");
+                return null;
+            }
+
+            Tuple<string, string, string> t = ParseMembers(r);
+            string memberCode = string.Format(PacketFormats.MemberListFormat, listType, listName, t.Item1, t.Item2, t.Item3);
+            string readCode = string.Format(PacketFormats.ReadListFormat, listType, listName);
+            string writeCode = string.Format(PacketFormats.WriteListFormat, listType, listName);
+
+            return Tuple.Create(memberCode, readCode, writeCode);
         }
 
         public static string ToMemberType(string memberType)
@@ -134,6 +162,22 @@ namespace PacketGenerator
                 case "double": return "ToDouble";
                 default: return "";
             }
+        }
+
+        public static string ToUpperFirstChar(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return "";
+            
+            return input[0].ToString().ToUpper() + input.Substring(1);
+        }
+
+        public static string ToLowerFirstChar(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return "";
+
+            return input[0].ToString().ToLower() + input.Substring(1);
         }
     }
 }

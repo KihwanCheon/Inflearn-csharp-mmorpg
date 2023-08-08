@@ -3,10 +3,10 @@
   <packet name="PlayerInfoReq">
     <long name="playerId"/>
     <string name="name"/>
-    <list name="skill">
+    <list name="skills" type="Skill">
       <int name="id"/>
-      <short name="id"/>
-      <float name="id"/>
+      <short name="level"/>
+      <float name="duration"/>
     </list>
   </packet>
 </PDL>
