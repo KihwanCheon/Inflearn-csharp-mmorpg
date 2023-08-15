@@ -15,7 +15,7 @@ namespace DummyClient
 
     public class PlayerInfoReq
     {
-        public byte testByte;
+        public sbyte testByte;
         public long playerId;
         public string name;
         public struct Skill
@@ -57,8 +57,8 @@ namespace DummyClient
             count += sizeof(ushort);    // for PacketID
 
             // byte
-            this.testByte = segment.Array[segment.Offset + count];
-            count += sizeof(byte);
+            this.testByte = (sbyte)segment.Array[segment.Offset + count];
+            count += sizeof(sbyte);
             // 
 
             this.playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
@@ -92,7 +92,7 @@ namespace DummyClient
             count += sizeof(ushort);    // for PacketID
 
             // byte
-            segment.Array[segment.Offset + count] = this.testByte;
+            segment.Array[segment.Offset + count] = (byte)this.testByte;
             count += sizeof(byte);
             //
 
