@@ -15,6 +15,7 @@ namespace DummyClient
 
     public class PlayerInfoReq
     {
+        public byte testByte;
         public long playerId;
         public string name;
         public struct Skill
@@ -54,6 +55,12 @@ namespace DummyClient
             ushort count = 0;
             count += sizeof(ushort);    // for size
             count += sizeof(ushort);    // for PacketID
+
+            // byte
+            this.testByte = segment.Array[segment.Offset + count];
+            count += sizeof(byte);
+            // 
+
             this.playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
             count += sizeof(long);
             ushort nameLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
@@ -83,6 +90,11 @@ namespace DummyClient
             count += sizeof(ushort);    // for size
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.PlayerInfoReq);
             count += sizeof(ushort);    // for PacketID
+
+            // byte
+            segment.Array[segment.Offset + count] = this.testByte;
+            count += sizeof(byte);
+            //
 
             success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.playerId);
             count += sizeof(long);

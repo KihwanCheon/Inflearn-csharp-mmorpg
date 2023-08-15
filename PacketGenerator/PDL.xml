@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <PDL>
   <packet name="PlayerInfoReq">
+    <byte name="testByte"/>
+    <sbyte name="testSByte"/>
     <long name="playerId"/>
     <string name="name"/>
     <list name="skills" type="Skill">

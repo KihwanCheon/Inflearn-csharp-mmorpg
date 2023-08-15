@@ -97,6 +97,12 @@ namespace PacketGenerator
 
                 switch (memberType)
                 {
+                    case "byte":
+                    case "sbyte":
+                        memberCode += string.Format(PacketFormats.MemberFormat, memberType, memberName);
+                        readCode += string.Format(PacketFormats.ReadByteFormat, memberName, memberType);
+                        writeCode += string.Format(PacketFormats.WriteByteFormat, memberName, memberType);
+                        break;
                     case "bool":
                     case "short":
                     case "ushort":

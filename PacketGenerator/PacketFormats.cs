@@ -106,6 +106,13 @@ public List<{0}> {1} = new List<{0}>();";
 count += sizeof({2});";
 
         // {0} 변수 이름.
+        // {1} 변수 형식
+        public static string ReadByteFormat =
+@"this.{0} = segment.Array[segment.Offset + count];
+count += sizeof({1});";
+
+
+        // {0} 변수 이름.
         public static string ReadStringFormat =
 @"ushort {0}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
 count += sizeof(ushort);    // for {0}Len
@@ -131,6 +138,12 @@ for (int i = 0; i < {1}Len; i++)
         // {1} 변수 형식
         public static string WriteFormat =
 @"success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.{0});
+count += sizeof({1});";
+
+        // {0} 변수 이름
+        // {1} 변수 형식
+        public static string WriteByteFormat =
+@"segment.Array[segment.Offset + count] = this.{0};
 count += sizeof({1});";
 
         // {0} 변수 이름
