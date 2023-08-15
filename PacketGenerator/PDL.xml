@@ -9,6 +9,9 @@
       <int name="id"/>
       <short name="level"/>
       <float name="duration"/>
+      <list name="attrs" type="Attribute">
+        <int name="fire"/>
+      </list>
     </list>
   </packet>
   <packet name="Test">
