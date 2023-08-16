@@ -9,9 +9,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "ServerCore\Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyClient", "DummyClient\DummyClient.csproj", "{D7330222-2F62-4D3D-84BB-DA7CAE7D9890}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketGenerator", "PacketGenerator\PacketGenerator.csproj", "{359434EC-1B86-46D9-8D51-4D239D977521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PacketGenerator", "PacketGenerator\PacketGenerator.csproj", "{359434EC-1B86-46D9-8D51-4D239D977521}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{47B2E83C-B4E4-4E84-81E9-CF63B97D5514}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{84757E91-5249-42E1-91B5-C4D13044A8E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packet", "Packet", "{2FFE13A9-985D-4D0C-A268-4DF27D43D0EF}"
+	ProjectSection(SolutionItems) = preProject
+		Common\Packet\GenPackets.bat = Common\Packet\GenPackets.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +48,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{359434EC-1B86-46D9-8D51-4D239D977521} = {47B2E83C-B4E4-4E84-81E9-CF63B97D5514}
+		{2FFE13A9-985D-4D0C-A268-4DF27D43D0EF} = {84757E91-5249-42E1-91B5-C4D13044A8E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5807A92-8B93-42CC-A5E4-9061000874E5}
