@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Threading;
 using ServerCore;
 
@@ -24,29 +22,7 @@ namespace Server
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            ushort count = 0;
-            ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
-            count += HeaderSize;
-            ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
-            count += 2;
-
-            switch ((PacketID) id)
-            {
-                case PacketID.PlayerInfoReq:
-                {
-                    var req = new PlayerInfoReq();
-                    req.Read(buffer);
-                    Console.WriteLine($"PlayerInfoReq : {req.playerId}, {req.name}");
-
-                    foreach (var skill in req.skills)
-                    {
-                        Console.WriteLine($"skill {skill.id}, {skill.level}, {skill.duration}, attrs: {skill.attrs.Count}, (fire: {(skill.attrs.Count > 0 ? skill.attrs[0].fire : 0)})");
-                    }
-                }
-                break;
-            }
-
-            Console.WriteLine($"Recv packetId: {id}, size: {size}");
+            PacketManager.Instance.OnRecvPacket(this, buffer);
         }
         
         public override void OnSend(int numOfBytes)
