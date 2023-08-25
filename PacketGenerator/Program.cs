@@ -9,7 +9,8 @@ namespace PacketGenerator
         private static string _genPackets = @"";
         private static ushort _packetId = 0;
         private static string _packetEnums = @"";
-        private static string _managerRegister = @"";
+        private static string _clientRegister = @"";
+        private static string _serverRegister = @"";
 
         static void Main(string[] args)
         {
@@ -39,8 +40,10 @@ namespace PacketGenerator
                 string fileText = string.Format(PacketFormats.FileFormat, _packetEnums, _genPackets);
                 File.WriteAllText("GenPackets.cs", fileText);
 
-                string managerText = string.Format(PacketFormats.ManagerFormat, _managerRegister);
-                File.WriteAllText("PacketManager.cs", managerText);
+                string serverText = string.Format(PacketFormats.ManagerFormat, _serverRegister);
+                string clientText = string.Format(PacketFormats.ManagerFormat, _clientRegister);
+                File.WriteAllText("ServerPacketManager.cs", serverText);
+                File.WriteAllText("ClientPacketManager.cs", clientText);
             }
         }
 
@@ -70,7 +73,11 @@ namespace PacketGenerator
 
             _genPackets += string.Format(PacketFormats.PacketFormat, packetName, t.Item1, t.Item2, t.Item3);
             _packetEnums += string.Format(PacketFormats.EnumFormat, packetName, ++_packetId) + Environment.NewLine + "\t";
-            _managerRegister += string.Format(PacketFormats.ManagerRegisterFormat, packetName);
+
+            if (packetName.StartsWith("S_") || packetName.StartsWith("s_"))
+                _clientRegister += string.Format(PacketFormats.ManagerRegisterFormat, packetName);
+            else
+                _serverRegister += string.Format(PacketFormats.ManagerRegisterFormat, packetName);
         }
 
         /// <see cref="PacketFormats.MemberFormat"/>

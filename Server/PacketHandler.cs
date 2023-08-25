@@ -4,9 +4,9 @@ using ServerCore;
 
 public class PacketHandler
 {
-    public static void PlayerInfoReqHandler(PacketSession session, IPacket packet)
+    public static void C_PlayerInfoReqHandler(PacketSession session, IPacket packet)
     {
-        var req = packet as PlayerInfoReq;
+        var req = packet as C_PlayerInfoReq;
 
         Console.WriteLine($"PlayerInfoReq : {req.playerId}, {req.name}");
 
@@ -14,9 +14,5 @@ public class PacketHandler
         {
             Console.WriteLine($"skill {skill.id}, {skill.level}, {skill.duration}, attrs: {skill.attrs.Count}, (fire: {(skill.attrs.Count > 0 ? skill.attrs[0].fire : 0)})");
         }
-    }
-
-    public static void TestHandler(PacketSession session, IPacket packet)
-    {
     }
 }

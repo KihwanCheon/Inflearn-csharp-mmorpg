@@ -6,5 +6,5 @@ START ..\..\PacketGenerator\bin\PacketGenerator.exe ..\..\PacketGenerator\PDL.xm
 XCOPY /Y GenPackets.cs "..\..\DummyClient\Packet"
 XCOPY /Y GenPackets.cs "..\..\Server\Packet"
 
-XCOPY /Y PacketManager.cs "..\..\DummyClient\Packet"
-XCOPY /Y PacketManager.cs "..\..\Server\Packet"
+XCOPY /Y ClientPacketManager.cs "..\..\DummyClient\Packet"
+XCOPY /Y ServerPacketManager.cs "..\..\Server\Packet"
