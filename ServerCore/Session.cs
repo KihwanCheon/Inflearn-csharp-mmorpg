@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace ServerCore
@@ -21,6 +20,12 @@ namespace ServerCore
                 if (buffer.Count < HeaderSize)
                 {
                     Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than headerSize");
+                    break;
+                }
+
+                if (buffer.Array == null)
+                {
+                    Console.WriteLine($"OnRecv(buffer), buffer is null. why buffer({buffer.Count})?");
                     break;
                 }
 
@@ -51,15 +56,15 @@ namespace ServerCore
     public abstract class Session
     {
         Socket _socket;
-        private int _disconnected = 0;
+        private int _disconnected;
 
-        RecvBuffer _recvBuffer = new RecvBuffer(1024);
+        readonly RecvBuffer _recvBuffer = new RecvBuffer(1024);
 
-        object _lock = new object();
-        SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
-        SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
-        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
-        private Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
+        readonly object _lock = new object();
+        readonly SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
+        readonly SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
+        readonly List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+        readonly Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
 
         #region inheritable interface
 
@@ -71,13 +76,22 @@ namespace ServerCore
 
         #endregion
 
+        void Clear()
+        {
+            lock (_lock)
+            {
+                _sendQueue.Clear();
+                _pendingList.Clear();
+            }
+        }
+
         public void Start(Socket socket)
         {
             _socket = socket;
 
-            _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+            _recvArgs.Completed += OnRecvCompleted;
             // recvArgs.UserToken = 뭔가 구분할 값을 넣어서 쓸수 있음.
-            _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
+            _sendArgs.Completed += OnSendCompleted;
 
             RegisterRecv();
         }
@@ -102,12 +116,17 @@ namespace ServerCore
 
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
+
+            Clear();
         }
 
         #region 네트워크 통신 PRIVATE_INTERNAL
 
         void RegisterSend()
         {
+            if (_disconnected == 1)
+                return;
+
             /* //_sendArgs.BufferList 와 같이 쓰면 안됨.
             byte[] buff = _sendQueue.Dequeue();
             _sendArgs.SetBuffer(buff, 0, buff.Length);
@@ -123,9 +142,16 @@ namespace ServerCore
 
             _sendArgs.BufferList = _pendingList;
 
-            bool pending = _socket.SendAsync(_sendArgs);
-            if (!pending)
-                OnSendCompleted(null, _sendArgs);
+            try
+            {
+                bool pending = _socket.SendAsync(_sendArgs);
+                if (!pending)
+                    OnSendCompleted(null, _sendArgs);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"RegisterSend Fail {e}");
+            }
         }
 
         private void OnSendCompleted(object sender, SocketAsyncEventArgs args)
@@ -158,15 +184,23 @@ namespace ServerCore
 
         private void RegisterRecv()
         {
+            if (_disconnected == 1)
+                return;
+
             _recvBuffer.Clean();
             ArraySegment<byte> segment = _recvBuffer.WriteSegment;
 
             _recvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
 
-            bool pending = _socket.ReceiveAsync(_recvArgs);
-            if (!pending) // 등록하자마자 받은게 있으면.
+            try
             {
-                OnRecvCompleted(null, _recvArgs);
+                bool pending = _socket.ReceiveAsync(_recvArgs);
+                if (!pending) // 등록하자마자 받은게 있으면.
+                    OnRecvCompleted(null, _recvArgs);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"RegisterRecv failed {e}");
             }
         }
 
