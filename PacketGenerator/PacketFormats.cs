@@ -231,7 +231,7 @@ count += sizeof({1});";
         public static string WriteStringFormat =
 @"// string
 ushort {0}LenCount = sizeof(ushort);
-ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(name, 0, this.{0}.Length, segment.Array, segment.Offset + count + {0}LenCount);
+ushort {0}Len = (ushort)Encoding.Unicode.GetBytes({0}, 0, this.{0}.Length, segment.Array, segment.Offset + count + {0}LenCount);
 success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), {0}Len);
 count += {0}LenCount;
 count += {0}Len;";
