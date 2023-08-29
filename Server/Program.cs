@@ -7,7 +7,8 @@ namespace Server
 
     class Program
     {
-        private static Listener _listener = new Listener();
+        private static readonly Listener _listener = new Listener();
+        public static GameRoom Room { get; } = new GameRoom();
 
         static void Main(string[] args)
         {
@@ -20,7 +21,7 @@ namespace Server
 
             try
             {
-                _listener.Init(endPoint, () => new ClientSession());
+                _listener.Init(endPoint, SessionManager.Instance.Generate);
                 Console.WriteLine("Listening ....");
 
                 while (true)
