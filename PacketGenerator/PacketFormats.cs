@@ -14,17 +14,14 @@ using ServerCore;
 public class PacketManager
 {{
     #region Singleton
-    private static PacketManager _instance;
-    public static PacketManager Instance
+
+    public static PacketManager Instance {{ get; }} = new PacketManager();
+
+    PacketManager()
     {{
-        get
-        {{
-            if (_instance == null)
-                _instance = new PacketManager();
-            return _instance;
-            ;
-        }}
+        Register();
     }}
+
     #endregion
 
     
