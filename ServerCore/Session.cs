@@ -41,7 +41,7 @@ namespace ServerCore
 
                 if (orgCnt == processLen || orgCnt < processLen + HeaderSize)
                 {
-                    Console.WriteLine($"OnRecv(buffer), all of buffer({orgCnt}) is proceeded({processLen})");
+                    // Console.WriteLine($"OnRecv(buffer), all of buffer({orgCnt}) is proceeded({processLen})");
                     break;
                 }
 

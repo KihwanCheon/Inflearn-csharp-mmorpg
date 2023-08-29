@@ -7,9 +7,9 @@ namespace Server
     {
         public static SessionManager Instance { get; } = new SessionManager();
 
-        private int _sessionId;
-        private readonly Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
-        object _lock = new object();
+        int _sessionId;
+        readonly Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
+        readonly object _lock = new object();
 
         public ClientSession Generate()
         {

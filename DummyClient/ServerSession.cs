@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using ServerCore;
 
 namespace DummyClient
 {
     /// <summary>서버 대리자</summary>
-    public class ServerSession : Session
+    public class ServerSession : PacketSession
     {
+        public int Id { get; }
+
+        public ServerSession(int id) => Id = id;
+
         /**
          * C++ 처럼 포인터를 직접적으로 사용하기.
          * TryWriteBytes 대용으로...
@@ -25,21 +27,14 @@ namespace DummyClient
             Console.WriteLine($"OnConnected: {endPoint}");
         }
 
-        public override int OnRecv(ArraySegment<byte> buffer)
+        public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            if (buffer == null || buffer.Array == null)
-            {
-                Console.WriteLine($"[From Server] null array");
-                return -1;
-            }
-            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-            Console.WriteLine($"[From Server] {recvData}");
-            return buffer.Count;
+            PacketManager.Instance.OnRecvPacket(this, buffer);
         }
 
         public override void OnSend(int numOfBytes)
         {
-            Console.WriteLine($"To Server Transferred bytes: {numOfBytes}");
+            // Console.WriteLine($"To Server Transferred bytes: {numOfBytes}");
         }
 
         public override void OnDisconnected(EndPoint endPoint)
