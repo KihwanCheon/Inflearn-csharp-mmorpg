@@ -19,7 +19,8 @@ namespace Server
         {
             Console.WriteLine($"OnConnected: {endPoint}");
             Room = Program.Room;
-            Room.Push(() => Room.Enter(this));
+            // Room.Push(() => Room.Enter(this));
+            Room.Push(new EnterRoomTask(Room, this));
         }
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
@@ -38,11 +39,48 @@ namespace Server
             if (Room != null)
             {
                 var room = Room;
-                room.Push(() => { room.Leave(this); });
+                // room.Push(() => { room.Leave(this); });
+                room.Push(new LeaveRoomTask(room, this));
+
                 Room = null;
             }
             
             Console.WriteLine($"OnDisconnected: {endPoint}");
+        }
+
+        class EnterRoomTask : ITask
+        {
+            readonly GameRoom _room;
+            readonly ClientSession _session;
+
+            public EnterRoomTask(GameRoom room, ClientSession session)
+            {
+                _room = room;
+                _session = session;
+            }
+
+            public void Execute()
+            {
+                _room.Enter(_session);
+            }
+        }
+
+
+        class LeaveRoomTask : ITask
+        {
+            readonly GameRoom _room;
+            readonly ClientSession _session;
+
+            public LeaveRoomTask(GameRoom room, ClientSession session)
+            {
+                _room = room;
+                _session = session;
+            }
+            
+            public void Execute()
+            {
+                _room.Leave(_session);
+            }
         }
     }
 }

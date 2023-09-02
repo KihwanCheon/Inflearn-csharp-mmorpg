@@ -9,6 +9,7 @@ namespace Server
         readonly List<ClientSession> _sessions = new List<ClientSession>();
         
         readonly JobQueue _jobQueue = new JobQueue();
+        readonly TaskQueue _taskQueue = new TaskQueue();
 
         public void Enter(ClientSession session)
         {
@@ -35,6 +36,11 @@ namespace Server
         public void Push(Action job)
         {
             _jobQueue.Push(job);
+        }
+
+        public void Push(ITask task)
+        {
+            _taskQueue.Push(task);
         }
     }
 }
