@@ -25,10 +25,10 @@ namespace ServerCore
                 _jobQueue.Enqueue(job);
                 if (_flushing == false)
                     flush = _flushing = true;
-
-                if (flush)
-                    Flush();
             }
+
+            if (flush)
+                Flush();
         }
 
         void Flush()
