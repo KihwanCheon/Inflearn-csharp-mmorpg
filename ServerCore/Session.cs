@@ -15,29 +15,31 @@ namespace ServerCore
         {
             int orgCnt = buffer.Count;
             int processLen = 0;
+            int packetCount = 0;
             while (true)
             {
                 if (buffer.Count < HeaderSize)
                 {
-                    Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than headerSize");
+                    // Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than headerSize");
                     break;
                 }
 
                 if (buffer.Array == null)
                 {
-                    Console.WriteLine($"OnRecv(buffer), buffer is null. why buffer({buffer.Count})?");
+                    // Console.WriteLine($"OnRecv(buffer), buffer is null. why buffer({buffer.Count})?");
                     break;
                 }
 
                 ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
                 if (buffer.Count < size)
                 {
-                    Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than packet size({size})");
+                    // Console.WriteLine($"OnRecv(buffer), buffer({buffer.Count}) is less than packet size({size})");
                     break;
                 }
 
                 OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, size)); //packet 1 ea.
                 processLen += size;
+                packetCount++;
 
                 if (orgCnt == processLen || orgCnt < processLen + HeaderSize)
                 {
@@ -47,6 +49,10 @@ namespace ServerCore
 
                 buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + size, buffer.Count - size);
             }
+
+            if (packetCount > 1)
+                Console.WriteLine($"packet count: {packetCount}");
+
             return processLen;
         }
 
@@ -58,7 +64,7 @@ namespace ServerCore
         Socket _socket;
         private int _disconnected;
 
-        readonly RecvBuffer _recvBuffer = new RecvBuffer(1024);
+        readonly RecvBuffer _recvBuffer = new RecvBuffer(ushort.MaxValue);
 
         readonly object _lock = new object();
         readonly SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
@@ -101,6 +107,20 @@ namespace ServerCore
             lock (_lock)
             {
                 _sendQueue.Enqueue(sendBuff);
+                if (_pendingList.Count == 0)
+                    RegisterSend();
+            }
+        }
+
+        public void Send(List<ArraySegment<byte>> sendBuffs)
+        {
+            if (sendBuffs == null || sendBuffs.Count == 0)
+                return;
+
+            lock (_lock)
+            {
+                sendBuffs.ForEach(b => _sendQueue.Enqueue(b));
+
                 if (_pendingList.Count == 0)
                     RegisterSend();
             }

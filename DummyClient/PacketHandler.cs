@@ -10,6 +10,6 @@ public class PacketHandler
         var serverSession = session as ServerSession;
 
         // if (chatPacket?.playerId == 1)
-            Console.WriteLine($"{serverSession?.Id}] {chatPacket?.chat}");
+            // Console.WriteLine($"{serverSession?.Id}] {chatPacket?.chat}");
     }
 }
