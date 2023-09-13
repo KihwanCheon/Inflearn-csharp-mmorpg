@@ -23,10 +23,15 @@ namespace Server
                 _listener.Init(endPoint, SessionManager.Instance.Generate);
                 Console.WriteLine("Listening ....");
 
+                int roomTick = 0;
                 while (true)
                 {
-                    Room.Push(Room.Flush); //
-                    Thread.Sleep(250);
+                    int now = Environment.TickCount;
+                    if (roomTick < now)
+                    {
+                        Room.Push(Room.Flush); //
+                        roomTick = now + 250;
+                    }
                 }
             }
             catch (Exception e)
