@@ -11,6 +11,12 @@ namespace Server
         private static readonly Listener _listener = new Listener();
         public static GameRoom Room { get; } = new GameRoom();
 
+        static void FlushRoom()
+        {
+            Room.Push(Room.Flush); //
+            JobTimer.Instance.Push(FlushRoom, 250);
+        }
+
         static void Main(string[] args)
         {
             string host = Dns.GetHostName();
@@ -23,15 +29,12 @@ namespace Server
                 _listener.Init(endPoint, SessionManager.Instance.Generate);
                 Console.WriteLine("Listening ....");
 
-                int roomTick = 0;
+                // FlushRoom();
+                JobTimer.Instance.Push(FlushRoom);
+
                 while (true)
                 {
-                    int now = Environment.TickCount;
-                    if (roomTick < now)
-                    {
-                        Room.Push(Room.Flush); //
-                        roomTick = now + 250;
-                    }
+                    JobTimer.Instance.Flush();
                 }
             }
             catch (Exception e)
