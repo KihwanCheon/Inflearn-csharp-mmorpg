@@ -23,11 +23,11 @@ public class PacketManager
     #endregion
 
     
-    private Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv 
-        = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
+    readonly Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>> _onRecv =
+        new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>>();
 
-    private Dictionary<ushort, Action<PacketSession, IPacket>> _handler
-        = new Dictionary<ushort, Action<PacketSession, IPacket>>();
+    readonly Dictionary<ushort, Action<PacketSession, IPacket>> _handler =
+        new Dictionary<ushort, Action<PacketSession, IPacket>>();
 
 
     public void Register()
@@ -35,7 +35,9 @@ public class PacketManager
 {0}
     }}
     
-    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
+    public void OnRecvPacket(PacketSession session
+        , ArraySegment<byte> buffer
+        , Action<PacketSession, IPacket> onRecvCallback = null)
     {{
         ushort count = 0;
         ushort size = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
@@ -43,17 +45,28 @@ public class PacketManager
         ushort id = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
         count += 2;
 
-        if (_onRecv.TryGetValue(id, out var action))
-            action.Invoke(session, buffer);
+        if (_onRecv.TryGetValue(id, out var func))
+        {{
+            var packet = func.Invoke(session, buffer);
+            if (onRecvCallback != null)
+                onRecvCallback.Invoke(session, packet);
+            else
+                HandlePacket(session, packet);
+        }}
         else
             Console.WriteLine($""packet id not found: {{id}}"");
     }}
 
-    void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
+    T MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
     {{
         var packet = new T();
         packet.Read(buffer);
+        
+        return packet;
+    }}
 
+    public void HandlePacket(PacketSession session, IPacket packet)
+    {{
         if (_handler.TryGetValue(packet.Protocol, out var action))
             action.Invoke(session, packet);
         else
