@@ -4,21 +4,46 @@ using UnityEngine;
 
 public class PacketHandler
 {
-    public static void S_ChatHandler(PacketSession session, IPacket packet)
+    public static void S_BroadcastEnterGameHandler(PacketSession pSession, IPacket ipkt)
     {
-        var chatPacket = packet as S_Chat;
-        var serverSession = session as ServerSession;
+        var session = pSession as ServerSession;
+        var pkt = ipkt as S_BroadcastEnterGame;
+        if (pkt == null)
+            return;
+        
+        Debug.Log($"player {pkt.playerId} entered");
+        PlayerManager.Instance.EnterGame(pkt);
+    }
 
-        // if (chatPacket?.playerId == 1)
-        {
-            Debug.Log($"{ serverSession?.Id}] { chatPacket?.chat}");
+    public static void S_BroadcastLeaveGameHandler(PacketSession pSession, IPacket ipkt)
+    {
+        var session = pSession as ServerSession;
+        var pkt = ipkt as S_BroadcastLeaveGame;
+        if (pkt == null)
+            return;
+        
+        Debug.Log($"player {pkt.playerId} left");
+        PlayerManager.Instance.LeaveGame(pkt);
+    }
 
-            var go = GameObject.Find("Player"); // not working in async thread(packet handling)
-            
-            if (go == null)
-                Debug.Log($" Player not found");
-            else
-                Debug.Log($" Player found");
-        }
+    public static void S_PlayerListHandler(PacketSession pSession, IPacket ipkt)
+    {
+        var session = pSession as ServerSession;
+        var pkt = ipkt as S_PlayerList;
+        if (pkt == null)
+            return;
+        
+        Debug.Log($"{pkt.player.Count} players exist");
+        PlayerManager.Instance.Add(pkt);
+    }
+
+    public static void S_BroadcastMoveHandler(PacketSession pSession, IPacket ipkt)
+    {
+        var session = pSession as ServerSession;
+        var pkt = ipkt as S_BroadcastMove;
+        if (pkt == null)
+            return;
+        
+        PlayerManager.Instance.Move(pkt);
     }
 }
