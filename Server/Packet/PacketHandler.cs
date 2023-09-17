@@ -10,7 +10,7 @@ public class PacketHandler
         var session = pSession as ClientSession;
         if (session?.Room == null)
             return;
-        
+
         var room = session.Room;
         room.Push(() => room.Leave(session));
     }
@@ -25,9 +25,9 @@ public class PacketHandler
         if (movePkt == null)
             return;
 
-        Console.WriteLine($"player {session.SessionId} move ({movePkt.posX}, {movePkt.posY}, {movePkt.posZ})");
+        // Console.WriteLine($"player {session.SessionId} move ({movePkt.posX}, {movePkt.posY}, {movePkt.posZ})");
 
         var room = session.Room;
-        room.Push( () => room.Move(session, movePkt));
+        room.Push(() => room.Move(session, movePkt));
     }
 }
