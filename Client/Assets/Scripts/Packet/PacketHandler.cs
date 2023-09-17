@@ -10,8 +10,15 @@ public class PacketHandler
         var serverSession = session as ServerSession;
 
         if (chatPacket?.playerId == 1)
+        {
             Debug.Log($"{ serverSession?.Id}] { chatPacket?.chat}");
-        // if (chatPacket?.playerId == 1)
-        // Console.WriteLine($"{serverSession?.Id}] {chatPacket?.chat}");
+
+            var go = GameObject.Find("Player"); // not working in async thread(packet handling)
+            
+            if (go == null)
+                Debug.Log($" Player not found");
+            else
+                Debug.Log($" Player found");
+        }
     }
 }
