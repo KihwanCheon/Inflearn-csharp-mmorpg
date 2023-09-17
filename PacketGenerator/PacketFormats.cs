@@ -212,7 +212,7 @@ count += sizeof(ushort);
 for (int i = 0; i < {1}Len; i++)
 {{
     {0} element = new {0}();
-    element.Read(s, ref count);
+    element.Read(segment, ref count);
     this.{1}.Add(element);
 }}";
 

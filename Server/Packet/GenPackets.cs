@@ -196,7 +196,7 @@ public class S_PlayerList : IPacket
         for (int i = 0; i < playerLen; i++)
         {
             Player element = new Player();
-            element.Read(s, ref count);
+            element.Read(segment, ref count);
             this.player.Add(element);
         }
     }
