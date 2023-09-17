@@ -9,6 +9,10 @@ namespace Server
     {
         public int SessionId { get; }
         public GameRoom Room { get; set; }
+        public float PosX { get; set; }
+        public float PosY { get; set; }
+        public float PosZ { get; set; }
+
 
         public ClientSession(int sessionId)
         {
