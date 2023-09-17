@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Net;
 using DummyClient;
 using ServerCore;
 using UnityEngine;
@@ -17,6 +18,8 @@ public class NetworkManager : MonoBehaviour
 
         Connector connector = new Connector();
         connector.Connect(endPoint, () => _session);
+
+        StartCoroutine("CoSendPacket");
     }
 
     // Update is called once per frame
@@ -27,5 +30,18 @@ public class NetworkManager : MonoBehaviour
             return;
 
         PacketManager.Instance.HandlePacket(_session, packet);
+    }
+
+    IEnumerator CoSendPacket()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(3.0f);
+
+            C_Chat chatPacket = new C_Chat { chat = "Hello unity" };
+            var segment = chatPacket.Write();
+
+            _session.Send(segment);
+        }
     }
 }

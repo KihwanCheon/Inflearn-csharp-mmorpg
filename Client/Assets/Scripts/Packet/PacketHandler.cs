@@ -9,7 +9,7 @@ public class PacketHandler
         var chatPacket = packet as S_Chat;
         var serverSession = session as ServerSession;
 
-        if (chatPacket?.playerId == 1)
+        // if (chatPacket?.playerId == 1)
         {
             Debug.Log($"{ serverSession?.Id}] { chatPacket?.chat}");
 
