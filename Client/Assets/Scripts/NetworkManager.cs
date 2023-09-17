@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading;
+﻿using System.Net;
 using DummyClient;
 using ServerCore;
 using UnityEngine;
 
 public class NetworkManager : MonoBehaviour
 {
-
-    ServerSession _session = new ServerSession(0);
+    readonly ServerSession _session = new ServerSession(0);
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +22,10 @@ public class NetworkManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        var packet = PacketQueue.Instance.Pop();
+        if (packet == null)
+            return;
+
+        PacketManager.Instance.HandlePacket(_session, packet);
     }
 }
