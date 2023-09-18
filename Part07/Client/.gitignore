@@ -1,0 +1,16 @@
+
+
+## Unity proejct
+.vs
+.vsconfig
+.vscode
+*.csproj
+*.sln
+*.apk
+[Bb]uild
+[Ll]ibrary
+[Bb]in
+[Oo]bj
+[Ll]ogs
+[Tt]emp
+
