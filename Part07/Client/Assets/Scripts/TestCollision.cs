@@ -17,6 +17,15 @@ public class TestCollision : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        var blocked = new List<Vector3Int>();
+
+        foreach (var pos in _tilemap.cellBounds.allPositionsWithin)
+        {
+             var tile = _tilemap.GetTile(pos);
+             if (tile != null)
+             {
+                 blocked.Add(pos);
+             }
+        }
     }
 }
