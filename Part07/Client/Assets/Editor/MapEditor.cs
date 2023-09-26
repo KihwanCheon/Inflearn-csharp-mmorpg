@@ -24,15 +24,17 @@ public class MapEditor : MonoBehaviour
     }*/
 
     [MenuItem("Tools/GenerateMap %#g")]
-    private static void HelloWorld()
+    private static void GenerateMap()
     {
-        var go = GameObject.Find("Map");
-        if (go == null)
+        var goMaps = Resources.LoadAll<GameObject>("Prefabs/Map");
+        foreach (var go in goMaps)
         {
-            Debug.LogWarning("not found Map object");
-            return;
+            SaveFileFromMap(go);
         }
+    }
 
+    private static void SaveFileFromMap(GameObject go)
+    {
         var tm = Util.FindChild<Tilemap>(go, "Tilemap_Collision", true);
         if (tm == null)
         {
@@ -42,7 +44,7 @@ public class MapEditor : MonoBehaviour
 
         // 1. size of map
         // 2. occupied
-        using (var writer = File.CreateText("Assets/Resources/Map/output.txt"))
+        using (var writer = File.CreateText($"Assets/Resources/Map/{go.name}.txt"))
         {
             int xMin = tm.cellBounds.xMin;
             int xMax = tm.cellBounds.xMax;
@@ -53,7 +55,7 @@ public class MapEditor : MonoBehaviour
             writer.WriteLine(xMax);
             writer.WriteLine(yMin);
             writer.WriteLine(yMax);
-            
+
             // left(x < 0) top(y > 0) to right(x > 0) bottom(y < 0)
             for (int y = yMax; y >= yMin; --y)
             {
