@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using static Define;
 using static Define.MoveDir;
 
@@ -8,12 +9,73 @@ public class PlayerController : MonoBehaviour
     public float _speed = 5.0f;
 
     Vector3Int _cellPos = Vector3Int.zero; // destination position.
-    MoveDir _dir = None;
     bool _isMoving = false;
+    Animator _animator;
+
+    MoveDir _dir = None; 
+    // MoveDir _dir = Left; // If Animator default value is WALK_RIGHT.
+
+    public MoveDir Dir
+    {
+        get => _dir;
+        set
+        {
+            if (_dir == value)
+                return;
+
+            switch (value)
+            {
+                case Up:
+                    _animator.Play("WALK_BACK");
+                    transform.localScale = new Vector3(1.0f, 1.0f, 1.0f); break;
+                case Down:
+                    _animator.Play("WALK_FRONT");
+                    transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                    break;
+                case Left:
+                    _animator.Play("WALK_RIGHT");
+                    transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+                    break;
+                case Right:
+                    _animator.Play("WALK_RIGHT");
+                    transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                    break;
+                case None:
+                {
+                    switch (_dir)
+                    {
+                        case Up:
+                            _animator.Play("IDLE_BACK");
+                            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                            break;
+                        case Down:
+                            _animator.Play("IDLE_FRONT");
+                            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                            break;
+                        case Left:
+                            _animator.Play("IDLE_RIGHT");
+                            transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+                            break;
+                        case Right:
+                            _animator.Play("IDLE_RIGHT");
+                            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                            break;
+                        case None:
+                        break;
+                    }
+                }
+                break;
+            }
+
+            _dir = value;
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
+        _animator = GetComponent<Animator>();
         Vector3 pos = _grid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
         transform.position = pos;
     }
@@ -60,7 +122,7 @@ public class PlayerController : MonoBehaviour
         if (_isMoving)
             return;
 
-        switch (_dir)
+        switch (Dir)
         {
             case Up:
                 _cellPos += Vector3Int.up;
@@ -90,23 +152,23 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.W))
         {
-            _dir = MoveDir.Up;
+            Dir = MoveDir.Up;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            _dir = MoveDir.Down;
+            Dir = MoveDir.Down;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            _dir = MoveDir.Left;
+            Dir = MoveDir.Left;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            _dir = MoveDir.Right;
+            Dir = MoveDir.Right;
         }
         else
         {
-            _dir = MoveDir.None;
+            Dir = MoveDir.None;
         }
     }
 }
