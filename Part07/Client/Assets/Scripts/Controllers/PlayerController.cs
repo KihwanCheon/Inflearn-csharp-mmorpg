@@ -7,15 +7,14 @@ public class PlayerController : MonoBehaviour
     public Grid _grid;
     public float _speed = 5.0f;
 
-
-    Vector3Int _cellPos = Vector3Int.zero;
+    Vector3Int _cellPos = Vector3Int.zero; // destination position.
     MoveDir _dir = None;
     bool _isMoving = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 pos = _grid.CellToWorld(_cellPos);
+        Vector3 pos = _grid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
         transform.position = pos;
     }
 
@@ -24,35 +23,85 @@ public class PlayerController : MonoBehaviour
     {
         GetDirInput();
 
-        if (_isMoving == false)
+        UpdatePosition();
+
+        UpdateIfIsMoving();
+    }
+
+    /// <summary>
+    /// 이동 연출.
+    /// </summary>
+    void UpdatePosition()
+    {
+        if (!_isMoving)
+            return;
+
+        Vector3 destPos = _grid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
+        Vector3 moveDir = destPos - transform.position;
+
+        float dist = moveDir.magnitude;
+        if (dist < _speed * Time.deltaTime)
         {
-            switch (_dir)
-            {
-                
-            }
+            transform.position = destPos;
+            _isMoving = false;
+        }
+        else
+        {
+            transform.position += moveDir.normalized * _speed * Time.deltaTime;
+            //_isMoving = true;
         }
     }
 
+    /// <summary>
+    /// 로직 내부적으로 이동(연출 목적지 설정)
+    /// </summary>
+    void UpdateIfIsMoving()
+    {
+        if (_isMoving)
+            return;
+
+        switch (_dir)
+        {
+            case Up:
+                _cellPos += Vector3Int.up;
+                _isMoving = true;
+                break;
+            case Down:
+                _cellPos += Vector3Int.down;
+                _isMoving = true;
+                break;
+            case Left:
+                _cellPos += Vector3Int.left;
+                _isMoving = true;
+                break;
+            case Right:
+                _cellPos += Vector3Int.right;
+                _isMoving = true;
+                break;
+            /*nothing to do */
+            // default: break;
+        }
+    }
+
+    /// <summary>
+    /// 키보드 입력 처리. 
+    /// </summary>
     void GetDirInput()
     {
         if (Input.GetKey(KeyCode.W))
         {
-            // transform.position += Vector3.up * Time.deltaTime * _speed;
             _dir = MoveDir.Up;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            // transform.position += Vector3.down * Time.deltaTime * _speed;
             _dir = MoveDir.Down;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            // transform.position += Vector3.left * Time.deltaTime * _speed;
             _dir = MoveDir.Left;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            // transform.position += Vector3.right * Time.deltaTime * _speed;
             _dir = MoveDir.Right;
         }
         else
