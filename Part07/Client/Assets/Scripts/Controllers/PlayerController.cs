@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     bool _isMoving = false;
     Animator _animator;
 
-    MoveDir _dir = None; 
+    MoveDir _dir = Down; 
     // MoveDir _dir = Left; // If Animator default value is WALK_RIGHT.
 
     public MoveDir Dir
@@ -57,11 +57,10 @@ public class PlayerController : MonoBehaviour
                             transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
                             break;
                         case Right:
+                        default:
                             _animator.Play("IDLE_RIGHT");
                             transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
                             break;
-                        case None:
-                        break;
                     }
                 }
                 break;
