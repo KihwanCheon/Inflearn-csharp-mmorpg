@@ -35,6 +35,7 @@ public class MapEditor : MonoBehaviour
 
     private static void SaveFileFromMap(GameObject go)
     {
+        var tmBase = Util.FindChild<Tilemap>(go, "Tilemap_Base", true);
         var tm = Util.FindChild<Tilemap>(go, "Tilemap_Collision", true);
         if (tm == null)
         {
@@ -46,10 +47,10 @@ public class MapEditor : MonoBehaviour
         // 2. occupied
         using (var writer = File.CreateText($"Assets/Resources/Map/{go.name}.txt"))
         {
-            int xMin = tm.cellBounds.xMin;
-            int xMax = tm.cellBounds.xMax;
-            int yMin = tm.cellBounds.yMin;
-            int yMax = tm.cellBounds.yMax;
+            int xMin = tmBase.cellBounds.xMin;
+            int xMax = tmBase.cellBounds.xMax;
+            int yMin = tmBase.cellBounds.yMin;
+            int yMax = tmBase.cellBounds.yMax;
 
             writer.WriteLine(xMin);
             writer.WriteLine(xMax);
