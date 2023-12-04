@@ -5,7 +5,6 @@ using static Define.MoveDir;
 
 public class PlayerController : MonoBehaviour
 {
-    public Grid _grid;
     public float _speed = 5.0f;
 
     Vector3Int _cellPos = Vector3Int.zero; // destination position.
@@ -75,7 +74,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _animator = GetComponent<Animator>();
-        Vector3 pos = _grid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
+        Vector3 pos = Managers.Map.CurreGrid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
         transform.position = pos;
     }
 
@@ -97,7 +96,7 @@ public class PlayerController : MonoBehaviour
         if (!_isMoving)
             return;
 
-        Vector3 destPos = _grid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
+        Vector3 destPos = Managers.Map.CurreGrid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
         Vector3 moveDir = destPos - transform.position;
 
         float dist = moveDir.magnitude;
