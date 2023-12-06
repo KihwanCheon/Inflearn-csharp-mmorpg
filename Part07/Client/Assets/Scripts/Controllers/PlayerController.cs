@@ -117,29 +117,23 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void UpdateIfIsMoving()
     {
-        if (_isMoving)
+        if (_isMoving || Dir == None)
             return;
+
+        var destPos = _cellPos;
 
         switch (Dir)
         {
-            case Up:
-                _cellPos += Vector3Int.up;
-                _isMoving = true;
-                break;
-            case Down:
-                _cellPos += Vector3Int.down;
-                _isMoving = true;
-                break;
-            case Left:
-                _cellPos += Vector3Int.left;
-                _isMoving = true;
-                break;
-            case Right:
-                _cellPos += Vector3Int.right;
-                _isMoving = true;
-                break;
-            /*nothing to do */
-            // default: break;
+            case Up:    destPos += Vector3Int.up;    break;
+            case Down:  destPos += Vector3Int.down;  break;
+            case Left:  destPos += Vector3Int.left;  break;
+            case Right: destPos += Vector3Int.right; break;
+        }
+
+        if (Managers.Map.CanGo(destPos))
+        {
+            _cellPos = destPos;
+            _isMoving = true;
         }
     }
 
