@@ -90,8 +90,9 @@ public class PlayerController : MonoBehaviour
 
     void LateUpdate()
     {
-        var z = Camera.main.transform.position.z;
-        Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, z);
+        // var z = Camera.main.transform.position.z;
+        // Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, z);
+        Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10); // not change camera z.
     }
 
     /// <summary>
