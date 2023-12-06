@@ -88,6 +88,12 @@ public class PlayerController : MonoBehaviour
         UpdateIfIsMoving();
     }
 
+    void LateUpdate()
+    {
+        var z = Camera.main.transform.position.z;
+        Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, z);
+    }
+
     /// <summary>
     /// 이동 연출.
     /// </summary>
