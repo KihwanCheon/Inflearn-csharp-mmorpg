@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static Define;
+using static Define.CreatureState;
 using static Define.MoveDir;
 
 
@@ -11,8 +12,21 @@ public class CreatureController : MonoBehaviour
     public float _speed = 5.0f;
 
     protected Vector3Int _cellPos = Vector3Int.zero; // destination position.
-    protected bool _isMoving = false;
     protected Animator _animator;
+    protected CreatureState _state = Idle;
+
+    public CreatureState State
+    {
+        get { return _state; }
+        set
+        {
+            if (_state == value)
+                return;
+             
+            _state = value;
+        }
+    }
+
     protected MoveDir _dir = Down;
     // MoveDir _dir = Left; // If Animator default value is WALK_RIGHT.
 
@@ -104,7 +118,7 @@ public class CreatureController : MonoBehaviour
     /// </summary>
     void UpdatePosition()
     {
-        if (!_isMoving)
+        if (State != Moving)
             return;
 
         Vector3 destPos = Managers.Map.CurreGrid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
@@ -114,12 +128,12 @@ public class CreatureController : MonoBehaviour
         if (dist < _speed * Time.deltaTime)
         {
             transform.position = destPos;
-            _isMoving = false;
+            State = Idle;
         }
         else
         {
             transform.position += moveDir.normalized * _speed * Time.deltaTime;
-            //_isMoving = true;
+            State = Moving;
         }
     }
 
@@ -128,7 +142,7 @@ public class CreatureController : MonoBehaviour
     /// </summary>
     void UpdateIfIsMoving()
     {
-        if (_isMoving || Dir == None)
+        if (State == Moving || Dir == None)
             return;
 
         var destPos = _cellPos;
@@ -144,7 +158,7 @@ public class CreatureController : MonoBehaviour
         if (Managers.Map.CanGo(destPos))
         {
             _cellPos = destPos;
-            _isMoving = true;
+            State = Moving;
         }
     }
 }
