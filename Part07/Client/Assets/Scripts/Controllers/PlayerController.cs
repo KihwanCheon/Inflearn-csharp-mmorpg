@@ -46,7 +46,7 @@ public class PlayerController : CreatureController
         }
         else
         {
-            Dir = MoveDir.None;
+            Dir = None;
         }
     }
 }

@@ -14,6 +14,7 @@ public class CreatureController : MonoBehaviour
     protected Vector3Int _cellPos = Vector3Int.zero; // destination position.
     protected Animator _animator;
     protected CreatureState _state = Idle;
+    protected SpriteRenderer _sprite;
 
     public CreatureState State
     {
@@ -24,10 +25,12 @@ public class CreatureController : MonoBehaviour
                 return;
              
             _state = value;
+            UpdateAnimation();
         }
     }
 
     protected MoveDir _dir = Down;
+    protected MoveDir _lastDir = Down;
     // MoveDir _dir = Left; // If Animator default value is WALK_RIGHT.
 
     public MoveDir Dir
@@ -38,50 +41,73 @@ public class CreatureController : MonoBehaviour
             if (_dir == value)
                 return;
 
-            switch (value)
+            _dir = value;
+            if (value != None)
+                _lastDir = value;
+
+            UpdateAnimation();
+        }
+    }
+
+    protected virtual void UpdateAnimation()
+    {
+        if (State == Idle)
+        {
+            if (_dir != None) 
+                return;
+
+            switch (_lastDir)
+            {
+                case Up:
+                    _animator.Play("IDLE_BACK");
+                    _sprite.flipX = false;
+                    break;
+                case Down:
+                    _animator.Play("IDLE_FRONT");
+                    _sprite.flipX = false;
+                    break;
+                case Left:
+                    _animator.Play("IDLE_RIGHT");
+                    _sprite.flipX = true;
+                    break;
+                case Right:
+                default:
+                    _animator.Play("IDLE_RIGHT");
+                    _sprite.flipX = false;
+                    break;
+            }
+        }
+        else if (State == Moving)
+        {
+            switch (_dir)
             {
                 case Up:
                     _animator.Play("WALK_BACK");
-                    transform.localScale = new Vector3(1.0f, 1.0f, 1.0f); break;
+                    _sprite.flipX = false;
+                    break;
                 case Down:
                     _animator.Play("WALK_FRONT");
-                    transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                    _sprite.flipX = false;
                     break;
                 case Left:
                     _animator.Play("WALK_RIGHT");
-                    transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+                    _sprite.flipX = true;
                     break;
                 case Right:
                     _animator.Play("WALK_RIGHT");
-                    transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                    _sprite.flipX = false;
                     break;
                 case None:
-                    {
-                        switch (_dir)
-                        {
-                            case Up:
-                                _animator.Play("IDLE_BACK");
-                                transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-                                break;
-                            case Down:
-                                _animator.Play("IDLE_FRONT");
-                                transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-                                break;
-                            case Left:
-                                _animator.Play("IDLE_RIGHT");
-                                transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-                                break;
-                            case Right:
-                            default:
-                                _animator.Play("IDLE_RIGHT");
-                                transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-                                break;
-                        }
-                    }
                     break;
             }
+        }
+        else if (State == Skill)
+        {
 
-            _dir = value;
+        }
+        else // if (State == Dead)
+        {
+
         }
     }
 
@@ -101,6 +127,7 @@ public class CreatureController : MonoBehaviour
     protected virtual void Init()
     {
         _animator = GetComponent<Animator>();
+        _sprite = GetComponent<SpriteRenderer>();
         Vector3 pos = Managers.Map.CurreGrid.CellToWorld(_cellPos) + /*player init position */ new Vector3(0.5f, 0.5f, 0);
         transform.position = pos;
     }
@@ -129,6 +156,9 @@ public class CreatureController : MonoBehaviour
         {
             transform.position = destPos;
             State = Idle;
+            // _state = Idle; // 예외적으로..
+            // if (_dir == None)
+            //     UpdateAnimation();
         }
         else
         {
