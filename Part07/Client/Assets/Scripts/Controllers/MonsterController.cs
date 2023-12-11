@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define.CreatureState;
 using static Define.MoveDir;
 
 public class MonsterController : CreatureController
 {
     protected override void Init()
     {
-        base.Init();
+        base.Init(); // call first.
+
+        State = Idle;
+        Dir = None;
     }
 
     protected override void UpdateController()
